@@ -80,7 +80,7 @@ UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
   # Clone repository
   cd /home/debian/;
-  git clone git@github.com:bio-platform/bio-class.git bio-class 2>&1 > /home/debian/gitclone.txt
+  git clone git@github.com:bio-platform/bio-class-deb10.git bio-class 2>&1 > /home/debian/gitclone.txt
 
   # Delete deploy key
   rm -rf /root/.ssh/id_rsa*
@@ -90,7 +90,7 @@ UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
 else
   # Clone public repo
-  git clone https://github.com/bio-platform/bio-class.git bio-class 2>&1 > /home/debian/gitclone.txt
+  git clone https://github.com/bio-platform/bio-class-deb10.git bio-class 2>&1 > /home/debian/gitclone.txt
 
 fi
 
