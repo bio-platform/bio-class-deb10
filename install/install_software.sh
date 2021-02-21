@@ -155,7 +155,7 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
   #wget -P "$LOCAL_RSTUDIO_REPO" --no-verbose https://download1.rstudio.org/desktop/debian9/x86_64/rstudio-1.2.1335-amd64.deb
   # Create local repo for apt-get install, not use gdebi during VM init
   cd "$LOCAL_RSTUDIO_REPO"
-  #sudo dpkg-scanpackages . | gzip > ./Packages.gz
+  sudo dpkg-scanpackages . | gzip > ./Packages.gz
   cd "$SCRIPTDIR"
   update_sources ;
 
@@ -807,9 +807,9 @@ if [[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]];then
 fi
 
 # Clean up: Remove install dir
-if ([[ -z "$INDEVELOP" ]] && [[ "$MODE" == "all" ]])|| [[ "$MODE" == "base" ]]; then
-  rm -rf "${TMP_DIR}";
-fi
+#if ([[ -z "$INDEVELOP" ]] && [[ "$MODE" == "all" ]])|| [[ "$MODE" == "base" ]]; then
+#  rm -rf "${TMP_DIR}";
+#fi
 
 
 # "Finished Custom Script"
