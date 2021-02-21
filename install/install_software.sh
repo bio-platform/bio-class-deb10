@@ -562,7 +562,11 @@ if [[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]]; then
   fi
 
   # fail2ban
-  apt-get -y install iptables fail2ban iptables-persistent
+  apt-get -y install iptables fail2ban
+  echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+  echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -q iptables-persistent
+
   update-alternatives --set iptables /usr/sbin/iptables-legacy
   update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
   cp ${CONF_DIR}/jail.local /etc/fail2ban
