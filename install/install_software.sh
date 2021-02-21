@@ -406,7 +406,7 @@ library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor.r
-  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 > /home/debian/ bioconductor.log
+  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 > /home/debian/bioconductor.log
   cd "$SCRIPTDIR"
 
   # packages2
@@ -440,7 +440,7 @@ library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor2.r
-  cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 > /home/debian/ bioconductor2.log
+  cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 > /home/debian/bioconductor2.log
   cd "$SCRIPTDIR"
 
 fi
