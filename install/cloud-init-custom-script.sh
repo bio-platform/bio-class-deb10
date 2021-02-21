@@ -90,6 +90,7 @@ UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
 else
   # Clone public repo
+  cd /home/debian/;
   git clone https://github.com/bio-platform/bio-class-deb10.git bio-class 2>&1 > /home/debian/gitclone.txt
 
 fi
