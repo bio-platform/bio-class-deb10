@@ -164,8 +164,11 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
 
   # Install Rstudio after R
   #sudo apt-get -y --allow-unauthenticated install rstudio rstudio-server  ; update_sources ;
+  cd "$LOCAL_RSTUDIO_REPO"
   sudo apt-get -y install gdebi-core
   sudo gdebi -n rstudio-server-1.4.1103-amd64.deb
+
+  cd "$SCRIPTDIR"
   update_sources ;
 fi
 
