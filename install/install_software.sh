@@ -21,9 +21,6 @@ MODELIST="pre base post all"
 #common_functions
 . $LIB_DIR/common_functions
 
-# PATH
-echo "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> "${PATH_FILE}"
-
 USER=$(whoami)
 function_logger () {
     local tmp=$(echo "$1"| tr -s '\r\n' ';' |  sed '/^$/d')
@@ -74,9 +71,8 @@ done
 
 
 
-
-
-
+# PATH
+echo "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> "${PATH_FILE}"
 
 # Apt update + install directories
 update_sources ;
