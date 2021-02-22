@@ -72,6 +72,7 @@ done
 
 
 # PATH
+echo "PATH_FILE: ${PATH_FILE}"
 echo "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> "${PATH_FILE}"
 
 # Apt update + install directories
