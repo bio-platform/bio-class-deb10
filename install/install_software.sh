@@ -22,7 +22,7 @@ MODELIST="pre base post all"
 . $LIB_DIR/common_functions
 
 # PATH
-echo ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin:/usr/bin:/usr/sbin:/usr/local/bin:.:/bin:/usr/bin:/usr/sbin:/usr/local/bin:." >> "${PATH_FILE}"
+echo "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> "${PATH_FILE}"
 
 USER=$(whoami)
 function_logger () {
