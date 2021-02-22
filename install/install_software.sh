@@ -105,7 +105,7 @@ elif [[ -z "$BIOSW" ]];then
   BIOSW_AGE="age" ; BIOSW_GAA="gaa"; BIOSW_CONDA="conda" ; BIOSW_RSTUDIO="rstudio";
 else
   BIOSW_AGE=$(echo "$BIOSW" | egrep -i age | tr '[:upper:]' '[:lower:]') ;BIOSW_GAA=$(echo "$BIOSW" | egrep -i gaa | tr '[:upper:]' '[:lower:]');
-  BIOSW_CONDA="conda" ; BIOSW_RSTUDIO="rstudio";
+  BIOSW_CONDA="conda" ; BIOSW_RSTUDIO="rstudio"; BIOSW_BIOCONDUCTOR="bioconductor";
 fi
 
 public_ipv4=$(curl -s http://169.254.169.254/2009-04-04/meta-data/public-ipv4 2>/dev/null | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
@@ -115,7 +115,9 @@ echo "BIOUSER_EMAIL: $BIOUSER_EMAIL"
 echo "public_ipv4: $public_ipv4"
 echo "BIOSW_AGE: $BIOSW_AGE"
 echo "BIOSW_GAA: $BIOSW_GAA"
-
+echo "BIOSW_CONDA: $BIOSW_CONDA"
+echo "BIOSW_RSTUDIO: $BIOSW_RSTUDIO"
+echo "BIOSW_BIOCONDUCTOR: $BIOSW_BIOCONDUCTOR"
 
 if [[ "$MODE" == "pre" ]] || [[ "$MODE" == "all" ]];then
   useradd -m "$BIOUSER"
@@ -383,7 +385,7 @@ install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\"
 fi
 
  
-if ([[ -n "$BIOSW_AGE" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
+if (([[ -n "$BIOSW_AGE" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]]) && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
   # Bioconductor  - Default R path /usr/bin/R
   apt-get install -y libssl-dev libmariadb-dev default-libmysqlclient-dev libmariadb-dev-compat libmariadbd19 libmariadbclient-dev libhdf5-dev
   echo -e "#!/usr/bin/Rscript
