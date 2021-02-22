@@ -21,6 +21,9 @@ MODELIST="pre base post all"
 #common_functions
 . $LIB_DIR/common_functions
 
+# PATH
+echo ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin:/usr/bin:/usr/sbin:/usr/local/bin:.:/bin:/usr/bin:/usr/sbin:/usr/local/bin:." >> "${PATH_FILE}"
+
 USER=$(whoami)
 function_logger () {
     local tmp=$(echo "$1"| tr -s '\r\n' ';' |  sed '/^$/d')
@@ -637,11 +640,14 @@ if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
 
     # Export PATH, ll alias, load chanels if not loaded
     echo "# In each new bash session, before using conda, set the PATH" >> "$FILE" ;
-    if [[ "$MODE" == "all" ]];then
-      echo "export PATH=${PATH}" >> "$FILE" ;
-    elif [[ "$MODE" == "post" ]];then
-      TMP_PATH=$(cat "${PATH_FILE}" | tr -d '\n') ; echo "export PATH=${PATH}${TMP_PATH}" >> "$FILE" ;
+    if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
+      TMP_PATH=$(cat "${PATH_FILE}" | tr -d '\n') ; echo "export PATH=${TMP_PATH}" >> "$FILE" ;
     fi
+    #if [[ "$MODE" == "all" ]];then
+    #  echo "export PATH=${PATH}" >> "$FILE" ;
+    #elif [[ "$MODE" == "post" ]];then
+    #  TMP_PATH=$(cat "${PATH_FILE}" | tr -d '\n') ; echo "export PATH=${PATH}${TMP_PATH}" >> "$FILE" ;
+    #fi
     sed -i 's/#alias ll=\x27ls -l\x27/alias ll=\x27ls -laF\x27/g' "$FILE" ;
     echo "# Run the activation scripts of your conda packages" >> "$FILE";
     echo "# source ${INSTALL_DIR}/miniconda/bin/activate" >> "$FILE";
