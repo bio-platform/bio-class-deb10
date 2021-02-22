@@ -144,7 +144,7 @@ rpm2cpio cpio libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libjpeg62 liborc-
 libxslt1-dev libedit2  libcurl4-openssl-dev libcairo2-dev mesa-common-dev libxt-dev libglu1-mesa-dev \
 expect imagemagick dpkg-dev gdebi-core tmux libnspr4-dev libssl-doc libffi-dev libgdbm-dev \
 libnspr4-dev libnss3-dev libssl-dev libssl-doc wget tmux acl x11-apps xfonts-base htop \
-libqt5x11extras5 miniasm soapdenovo2 unixodbc-dev dnsutils
+libqt5x11extras5 miniasm soapdenovo2 unixodbc-dev dnsutils pandoc
 
 if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]]; then
   # Source for R, add key, creating own repository for RSTUDIO
