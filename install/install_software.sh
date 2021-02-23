@@ -379,8 +379,8 @@ fi
 if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
   #R packages
   echo -e "#!/usr/bin/Rscript
-install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\"))" >> "$TMP_DIR"/rstudiopackages.r
-  cd "${TMP_DIR}"; Rscript rstudiopackages.r
+install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\",\"credentials\"))" >> "$TMP_DIR"/rstudiopackages.r
+  cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
   cd "$SCRIPTDIR"
 fi
 
@@ -408,20 +408,37 @@ library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor.r
-  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 > /home/debian/bioconductor.log
+  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 >> /home/debian/bioconductor.log
   cd "$SCRIPTDIR"
 
   # packages2
+  echo -e "#!/usr/bin/Rscript
+
+install.packages("devtools")
+library(devtools)
+devtools::install_github(\"milesmcbain/friendlyeval\")
+devtools::install_github(\"hadley/emo\")
+install.packages(\"proj4\", dependencies=TRUE)
+install.packages(\"ggalt\", dependencies = T)
+" >> "$TMP_DIR"/bioconductor2.r                                                                                                                                                                                   cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log                                                                                                                                 cd "$SCRIPTDIR
+
+
+
+
+  # packages3
   apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin
   echo -e "#!/usr/bin/Rscript
 
 if (!requireNamespace(\"BiocManager\"))
     install.packages(\"BiocManager\")
 
-BiocManager::install(\"devtools\")
+library(githubinstall)
 
-devtools::install_github(\"milesmcbain/friendlyeval\")
-devtools::install_github(\"hadley/emo\")
+#BiocManager::install(\"devtools\")
+BiocManager::install(\"biocViews\")
+
+#devtools::install_github(\"milesmcbain/friendlyeval\")
+#devtools::install_github(\"hadley/emo\")
 
 BiocManager::install()
 
@@ -435,15 +452,28 @@ for(package in packages) {
   }
 }
 
-install.packages(\"proj4\", dependencies=TRUE)
-install.packages(\"ggalt\", dependencies = T)
+#install.packages(\"proj4\", dependencies=TRUE)
+#install.packages(\"ggalt\", dependencies = T)
 
 library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
-BiocManager::valid()" >> "$TMP_DIR"/bioconductor2.r
-  cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 > /home/debian/bioconductor2.log
+BiocManager::valid()" >> "$TMP_DIR"/bioconductor3.r
+  cd "${TMP_DIR}"; Rscript bioconductor3.r 2>&1 >> /home/debian/bioconductor3.log
   cd "$SCRIPTDIR"
+
+
+  # packages3
+  echo -e "#!/usr/bin/Rscript
+
+devtools::install_github("r-lib/devtools")
+devtools::install_github(\"milesmcbain/friendlyeval\")
+devtools::install_github(\"hadley/emo\")
+install.packages(\"proj4\", dependencies=TRUE)
+install.packages(\"ggalt\", dependencies = T)
+" >> "$TMP_DIR"/bioconductor2.r
+  cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
+  cd "$SCRIPTDIR
 
 fi
 
