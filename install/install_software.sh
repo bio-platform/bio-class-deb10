@@ -411,7 +411,10 @@ BiocManager::valid()" >> "$TMP_DIR"/bioconductor.r
   cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 >> /home/debian/bioconductor.log
   cd "$SCRIPTDIR"
 
+
+
   # packages2
+  apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin
   echo -e "#!/usr/bin/Rscript
 
 install.packages("devtools")
@@ -426,7 +429,6 @@ install.packages(\"ggalt\", dependencies = T)
 
 
   # packages3
-  apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin
   echo -e "#!/usr/bin/Rscript
 
 if (!requireNamespace(\"BiocManager\"))
@@ -442,7 +444,7 @@ BiocManager::install(\"biocViews\")
 
 BiocManager::install()
 
-packages <- c(\"textshaping\",\"PROJ\",\"ragg\",\"ggrastr\",\"EnhancedVolcano\",\"cowplot\",\"dplyr\",\"friendlyeval\",\"GGally\",\"ggplot2\",\"ggpubr\",\"ggrepel\",\"ggthemes\",\"glue\",\"gplots\",\"heatmaply\",\"magrittr\",\"matrixStats\",\"pheatmap\",\"RColorBrewer\",\"rlist\",\"tibble\",\"rmarkdown\",\"emo\",\"DT\",\"kableExtra\",\"knitr\",\"tidyr\",\"stringr\",\"ggforce\",\"ggcorrplot\",\"ggsci\",\"hrbrthemes\",\"see\",\"janitor\",\"plotly\",\"htmlwidgets\",\"psych\",\"dendextend\",\"BiocParallel\",\"lattice\",\"limma\",\"oligo\",\"ReportingTools\",\"sva\",\"readr\",\"Biobase\",\"rat2302.db\",\"AnnotationDbi\",\"qvalue\",\"Rsubread\",\"DESeq2\",\"EnsDb.Hsapiens.v75\",\"tximport\",\"org.Hs.eg.db\",\"airway\",\"GenomicFeatures\",\"vsn\",\"EnhancedVolcano\",\"goseq\",\"clusterProfiler\",\"enrichplot\",\"SPIA\",\"pathview\",\"tidyverse\",\"ComplexHeatmap\",\"here\",\"fs\",\"purrr\",\"conflicted\",\"R-CoderDotCom/ggcats@main\",\"coolbutuseless/geomlime\",\"renv\",\"KEGGREST\",\"Seurat\",\"scran\",\"drake\",\"targets\",\"bbc/bbplot\",\"stemangiola/tidyHeatmap\",\"rlesur/klippy\",\"patchwork\")
+packages <- c(\"textshaping\",\"PROJ\",\"ragg\",\"ggrastr\",\"EnhancedVolcano\",\"cowplot\",\"dplyr\",\"friendlyeval\",\"GGally\",\"ggplot2\",\"ggpubr\",\"ggrepel\",\"ggthemes\",\"glue\",\"gplots\",\"heatmaply\",\"magrittr\",\"matrixStats\",\"pheatmap\",\"RColorBrewer\",\"rlist\",\"tibble\",\"rmarkdown\",\"emo\",\"DT\",\"kableExtra\",\"knitr\",\"tidyr\",\"stringr\",\"ggforce\",\"ggcorrplot\",\"ggsci\",\"hrbrthemes\",\"see\",\"janitor\",\"plotly\",\"htmlwidgets\",\"psych\",\"dendextend\",\"BiocParallel\",\"lattice\",\"limma\",\"oligo\",\"ReportingTools\",\"sva\",\"readr\",\"Biobase\",\"rat2302.db\",\"AnnotationDbi\",\"qvalue\",\"Rsubread\",\"DESeq2\",\"EnsDb.Hsapiens.v75\",\"tximport\",\"org.Hs.eg.db\",\"airway\",\"GenomicFeatures\",\"vsn\",\"EnhancedVolcano\",\"goseq\",\"clusterProfiler\",\"enrichplot\",\"SPIA\",\"pathview\",\"tidyverse\",\"ComplexHeatmap\",\"here\",\"fs\",\"purrr\",\"conflicted\",\"renv\",\"KEGGREST\",\"Seurat\",\"scran\",\"drake\",\"targets\",\"patchwork\")
 
 BiocManager::install(packages)
 
@@ -463,17 +465,33 @@ BiocManager::valid()" >> "$TMP_DIR"/bioconductor3.r
   cd "$SCRIPTDIR"
 
 
-  # packages3
+
+  # packages4
   echo -e "#!/usr/bin/Rscript
 
-devtools::install_github("r-lib/devtools")
-devtools::install_github(\"milesmcbain/friendlyeval\")
-devtools::install_github(\"hadley/emo\")
-install.packages(\"proj4\", dependencies=TRUE)
-install.packages(\"ggalt\", dependencies = T)
-" >> "$TMP_DIR"/bioconductor2.r
-  cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
-  cd "$SCRIPTDIR
+if (!requireNamespace(\"BiocManager\"))
+    install.packages(\"BiocManager\")
+
+library(githubinstall)
+
+BiocManager::install()
+
+packages <- c(\"R-CoderDotCom/ggcats@main\",\"coolbutuseless/geomlime\",\"bbc/bbplot\",\"stemangiola/tidyHeatmap\",\"rlesur/klippy\")
+
+BiocManager::install(packages)
+
+for(package in packages) {                                                                                                                                                                                        if(package %in% rownames(installed.packages()) == FALSE) {
+    stop(\"Package '\", package, \"' was not installed\")
+  }
+}
+
+library(BiocManager)
+BiocManager::valid()
+BiocManager::install(update = TRUE, ask = FALSE)
+BiocManager::valid()" >> "$TMP_DIR"/bioconductor4.r
+  cd "${TMP_DIR}"; Rscript bioconductor4.r 2>&1 >> /home/debian/bioconductor4.log
+  cd "$SCRIPTDIR"
+
 
 fi
 
