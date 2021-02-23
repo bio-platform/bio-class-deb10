@@ -77,6 +77,7 @@ update_sources ;
 # PATH
 echo "PATH_FILE: ${PATH_FILE}"
 echo "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> "${PATH_FILE}"
+echo "$PATH" >> "${PATH_FILE}.build"
 
 # Upgraded cloud.cfg
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y update
@@ -376,18 +377,70 @@ if ([[ -n "$BIOSW_GAA" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];
 
 fi
 
+if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
+  #Bioconductor
+  apt-get install -y libssl-dev libmariadb-dev default-libmysqlclient-dev libmariadb-dev-compat libmariadbd19 libmariadbclient-dev libhdf5-dev
+
+  update_sources ;
+  sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+  update_sources ;
+
+  # packages for R curl xml2
+  apt-get -y install libcurl4-openssl-dev libxml2-dev
+  apt-get -y install mc htop
+
+  # Fix: fatal: $HOME not set
+  git config --system http.sslVerify false
+  git config --system user.email "$BIOUSER"
+
+  #  ncdf4
+  apt-get -y install libnetcdf-dev
+
+  # rmpi
+  apt-get -y build-dep r-cran-rmpi
+
+  #sodium
+  apt-get -y install libsodium-dev
+
+  #harfbuzz fribidi
+  apt-get -y install libharfbuzz-dev libfribidi-dev
+
+  # textshaping
+  apt-get -y install libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
+
+  # GSL
+  apt-get -y install libgsl-dev libcurl4-gnutls-dev
+
+  #packages2
+  apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin
+  update_sources ;
+fi
+
 if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
   #R packages
   echo -e "#!/usr/bin/Rscript
-install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\",\"credentials\"))" >> "$TMP_DIR"/rstudiopackages.r
+install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\"),quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
+install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")" >> "$TMP_DIR"/rstudiopackages.r
   cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
   cd "$SCRIPTDIR"
 fi
 
+if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
+  # Set permissions for "$BIOUSER" account
+  for item in /opt/${name}/ $TMP_DIR /usr/lib/R/ /usr/share/R/ /usr/local/lib/R/site-library; do
+  chmod g+s "$item"; setfacl -dR -m g:"$BIOUSER":rwx "$item" ; setfacl -dR -m u:"$BIOUSER":rwx "$item" ;
+  setfacl -R -m u:"$BIOUSER":rwx "$item" ;setfacl -R -m g:"$BIOUSER":rwx "$item" ;  done
+
+  # Fix credentials - Error: package or namespace load failed for credentials
+  echo -e "#!/usr/bin/Rscript
+install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")" >> /tmp/bio-class-tmp/r-credentials.r
+  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript r-credentials.r 2>&1"
+
+fi
  
 if (([[ -n "$BIOSW_AGE" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]]) && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
   # Bioconductor  - Default R path /usr/bin/R
-  apt-get install -y libssl-dev libmariadb-dev default-libmysqlclient-dev libmariadb-dev-compat libmariadbd19 libmariadbclient-dev libhdf5-dev
+
   echo -e "#!/usr/bin/Rscript
 
 if (!requireNamespace(\"BiocManager\"))
@@ -397,7 +450,7 @@ BiocManager::install()
 
 packages <- c(\"Biobase\",\"BiocParallel\",\"DESeq2\",\"DT\",\"GOstats\",\"GOsummaries\",\"GenomicAlignments\",\"GenomicFeatures\",\"Heatplus\",\"KEGG.db\",\"PoiClaClu\",\"RColorBrewer\",\"ReportingTools\",\"Rsamtools\",\"Seurat\",\"affy\",\"airway\",\"annotate\",\"arrayQualityMetrics\",\"beadarray\",\"biomaRt\",\"dendextend\",\"gdata\",\"genefilter\",\"goseq\",\"gplots\",\"gtools\",\"hgu133plus2cdf\",\"hgu133plus2probe\",\"hgu133plus2.db\",\"hwriter\",\"illuminaHumanv3.db\",\"lattice\",\"limma\",\"lumi\",\"made4\",\"oligo\",\"org.Hs.eg.db\",\"org.Mm.eg.db\",\"org.Rn.eg.db\",\"pander\",\"pd.rat230.2\",\"pheatmap\",\"preprocessCore\",\"qvalue\",\"rat2302.db\",\"rmarkdown\",\"sva\",\"tidyverse\",\"vsn\",\"xtable\",\"tximport\",\"EnsDb.Hsapiens.v75\",\"AnnotationHub\",\"clusterProfiler\",\"enrichplot\",\"pathview\",\"SPIA\",\"edgeR\")
 
-BiocManager::install(packages)
+BiocManager::install(packages ,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 
 for(package in packages) {
   if(package %in% rownames(installed.packages()) == FALSE) {
@@ -414,16 +467,17 @@ BiocManager::valid()" >> "$TMP_DIR"/bioconductor.r
 
 
   # packages2
-  apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin
   echo -e "#!/usr/bin/Rscript
 
-install.packages("devtools")
+install.packages(\"devtools\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 library(devtools)
 devtools::install_github(\"milesmcbain/friendlyeval\")
 devtools::install_github(\"hadley/emo\")
-install.packages(\"proj4\", dependencies=TRUE)
-install.packages(\"ggalt\", dependencies = T)
-" >> "$TMP_DIR"/bioconductor2.r                                                                                                                                                                                   cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log                                                                                                                                 cd "$SCRIPTDIR
+install.packages(\"proj4\", dependencies=TRUE,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE)
+install.packages(\"ggalt\", dependencies = T,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE)
+" >> "$TMP_DIR"/bioconductor2.r
+cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
+cd "$SCRIPTDIR
 
 
 
@@ -446,7 +500,7 @@ BiocManager::install()
 
 packages <- c(\"textshaping\",\"PROJ\",\"ragg\",\"ggrastr\",\"EnhancedVolcano\",\"cowplot\",\"dplyr\",\"friendlyeval\",\"GGally\",\"ggplot2\",\"ggpubr\",\"ggrepel\",\"ggthemes\",\"glue\",\"gplots\",\"heatmaply\",\"magrittr\",\"matrixStats\",\"pheatmap\",\"RColorBrewer\",\"rlist\",\"tibble\",\"rmarkdown\",\"emo\",\"DT\",\"kableExtra\",\"knitr\",\"tidyr\",\"stringr\",\"ggforce\",\"ggcorrplot\",\"ggsci\",\"hrbrthemes\",\"see\",\"janitor\",\"plotly\",\"htmlwidgets\",\"psych\",\"dendextend\",\"BiocParallel\",\"lattice\",\"limma\",\"oligo\",\"ReportingTools\",\"sva\",\"readr\",\"Biobase\",\"rat2302.db\",\"AnnotationDbi\",\"qvalue\",\"Rsubread\",\"DESeq2\",\"EnsDb.Hsapiens.v75\",\"tximport\",\"org.Hs.eg.db\",\"airway\",\"GenomicFeatures\",\"vsn\",\"EnhancedVolcano\",\"goseq\",\"clusterProfiler\",\"enrichplot\",\"SPIA\",\"pathview\",\"tidyverse\",\"ComplexHeatmap\",\"here\",\"fs\",\"purrr\",\"conflicted\",\"renv\",\"KEGGREST\",\"Seurat\",\"scran\",\"drake\",\"targets\",\"patchwork\")
 
-BiocManager::install(packages)
+BiocManager::install(packages,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 
 for(package in packages) {
   if(package %in% rownames(installed.packages()) == FALSE) {
@@ -478,7 +532,7 @@ BiocManager::install()
 
 packages <- c(\"R-CoderDotCom/ggcats@main\",\"coolbutuseless/geomlime\",\"bbc/bbplot\",\"stemangiola/tidyHeatmap\",\"rlesur/klippy\")
 
-BiocManager::install(packages)
+BiocManager::install(packages,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 
 for(package in packages) {                                                                                                                                                                                        if(package %in% rownames(installed.packages()) == FALSE) {
     stop(\"Package '\", package, \"' was not installed\")
@@ -675,6 +729,7 @@ fi
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
   PATH=$PATH;PATH+=":~/.local/bin"; export PATH ; echo ":~/.local/bin" >> "${PATH_FILE}"
   PATH=$PATH;PATH+=":~/bin"; export PATH ; echo ":~/bin" >> "${PATH_FILE}"
+  echo "$PATH" >> "${PATH_FILE}.build"
 
   # Set permissions for "$BIOUSER" account
   for item in /opt/${name}/ $TMP_DIR /usr/lib/R/ /usr/share/R/ /usr/local/lib/R/site-library; do
