@@ -425,8 +425,12 @@ if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" 
 
   # Fix credentials - Error: package or namespace load failed for credentials
   echo -e "#!/usr/bin/Rscript
-install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")" >> /tmp/bio-class-tmp/r-credentials.r
-  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript r-credentials.r 2>&1"
+install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")
+install.packages(\"gert\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
+install.packages(\"usethis\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
+install.packages(\"githubinstall\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
+" >> /tmp/bio-class-tmp/r-credentials.r
+  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript r-credentials.r >> /home/${BIOUSER}/r-credentials.log"
 
 fi
 
@@ -436,7 +440,8 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
   echo -e "#!/usr/bin/Rscript
 install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\"),quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 " >> "$TMP_DIR"/rstudiopackages.r
-  cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
+#  cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
+  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript rstudiopackages.r >> /home/${BIOUSER}/rstudiopackages.log"
   cd "$SCRIPTDIR"
 fi
 
@@ -463,9 +468,8 @@ library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor.r
-  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 >> /home/debian/bioconductor.log
-  cd "$SCRIPTDIR"
-
+#  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 >> /home/debian/bioconductor.log
+  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor.r >> /home/${BIOUSER}/bioconductor.log"
 
 
   # packages2
@@ -478,9 +482,8 @@ devtools::install_github(\"hadley/emo\")
 install.packages(\"proj4\", dependencies=TRUE,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE)
 install.packages(\"ggalt\", dependencies = T,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE)
 " >> "$TMP_DIR"/bioconductor2.r
-cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
-cd "$SCRIPTDIR"
-
+#cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
+su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor2.r >> /home/${BIOUSER}/bioconductor2.log"
 
 
 
@@ -517,8 +520,8 @@ library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor3.r
-  cd "${TMP_DIR}"; Rscript bioconductor3.r 2>&1 >> /home/debian/bioconductor3.log
-  cd "$SCRIPTDIR"
+#  cd "${TMP_DIR}"; Rscript bioconductor3.r 2>&1 >> /home/debian/bioconductor3.log
+  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor3.r >> /home/${BIOUSER}/bioconductor3.log"
 
 
 
@@ -536,7 +539,8 @@ packages <- c(\"R-CoderDotCom/ggcats@main\",\"coolbutuseless/geomlime\",\"bbc/bb
 
 BiocManager::install(packages,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 
-for(package in packages) {                                                                                                                                                                                        if(package %in% rownames(installed.packages()) == FALSE) {
+for(package in packages) {
+  if(package %in% rownames(installed.packages()) == FALSE) {
     stop(\"Package '\", package, \"' was not installed\")
   }
 }
@@ -545,10 +549,11 @@ library(BiocManager)
 BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor4.r
-  cd "${TMP_DIR}"; Rscript bioconductor4.r 2>&1 >> /home/debian/bioconductor4.log
+#  cd "${TMP_DIR}"; Rscript bioconductor4.r 2>&1 >> /home/debian/bioconductor4.log
+  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor4.r >> /home/${BIOUSER}/bioconductor4.log"
+
+
   cd "$SCRIPTDIR"
-
-
 fi
 
 if ([[ -n "$BIOSW_CONDA" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]]; then
