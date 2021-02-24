@@ -412,17 +412,9 @@ if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" 
   apt-get -y install libgsl-dev libcurl4-gnutls-dev
 
   #packages2
-  apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin
-  update_sources ;
-fi
+  apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin libgit2-27 libgit2-dev
 
-if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
-  #R packages
-  echo -e "#!/usr/bin/Rscript
-install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\"),quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
-install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")" >> "$TMP_DIR"/rstudiopackages.r
-  cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
-  cd "$SCRIPTDIR"
+  update_sources ;
 fi
 
 if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
@@ -437,7 +429,17 @@ install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")" >> /tmp/bio-
   su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript r-credentials.r 2>&1"
 
 fi
- 
+
+if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
+  #install.packages(\"credentials\", INSTALL_opts=\"--no-test-load\")
+  #R packages
+  echo -e "#!/usr/bin/Rscript
+install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\"),quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
+" >> "$TMP_DIR"/rstudiopackages.r
+  cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
+  cd "$SCRIPTDIR"
+fi
+
 if (([[ -n "$BIOSW_AGE" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]]) && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
   # Bioconductor  - Default R path /usr/bin/R
 
@@ -477,7 +479,7 @@ install.packages(\"proj4\", dependencies=TRUE,quiet = FALSE,verbose = TRUE,updat
 install.packages(\"ggalt\", dependencies = T,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE)
 " >> "$TMP_DIR"/bioconductor2.r
 cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
-cd "$SCRIPTDIR
+cd "$SCRIPTDIR"
 
 
 
