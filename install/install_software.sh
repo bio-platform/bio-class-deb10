@@ -417,11 +417,15 @@ if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" 
   update_sources ;
 fi
 
+if [[ -z "$DEFUSER" ]];then
+  DEFUSER="debian"
+fi
+
 if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base" ]];then
-  # Set permissions for "$BIOUSER" account
+  # Set permissions for "$DEFUSER" account
   for item in /opt/${name}/ $TMP_DIR /usr/lib/R/ /usr/share/R/ /usr/local/lib/R/site-library; do
-  chmod g+s "$item"; setfacl -dR -m g:"$BIOUSER":rwx "$item" ; setfacl -dR -m u:"$BIOUSER":rwx "$item" ;
-  setfacl -R -m u:"$BIOUSER":rwx "$item" ;setfacl -R -m g:"$BIOUSER":rwx "$item" ;  done
+  chmod g+s "$item"; setfacl -dR -m g:"$DEFUSER":rwx "$item" ; setfacl -dR -m u:"$DEFUSER":rwx "$item" ;
+  setfacl -R -m u:"$DEFUSER":rwx "$item" ;setfacl -R -m g:"$DEFUSER":rwx "$item" ;  done
 
   # Fix credentials - Error: package or namespace load failed for credentials
   echo -e "#!/usr/bin/Rscript
@@ -430,7 +434,7 @@ install.packages(\"gert\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALS
 install.packages(\"usethis\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 install.packages(\"githubinstall\",quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 " >> /tmp/bio-class-tmp/r-credentials.r
-  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript r-credentials.r >> /home/${BIOUSER}/r-credentials.log"
+  su - "${DEFUSER}" -c "cd $TMP_DIR ; Rscript r-credentials.r >> /home/${DEFUSER}/r-credentials.log"
 
 fi
 
@@ -441,7 +445,7 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
 install.packages(c(\"shiny\",\"devtools\",\"rsconnect\",\"httpuv\",\"rmarkdown\",\"rlist\",\"ggthemes\",\"heatmaply\",\"ggpubr\"),quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE, dependencies=TRUE)
 " >> "$TMP_DIR"/rstudiopackages.r
 #  cd "${TMP_DIR}"; Rscript rstudiopackages.r 2>&1 >> /home/debian/rstudiopackages.log
-  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript rstudiopackages.r >> /home/${BIOUSER}/rstudiopackages.log"
+  su - "${DEFUSER}" -c "cd $TMP_DIR ; Rscript rstudiopackages.r >> /home/${DEFUSER}/rstudiopackages.log"
   cd "$SCRIPTDIR"
 fi
 
@@ -469,7 +473,7 @@ BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor.r
 #  cd "${TMP_DIR}"; Rscript bioconductor.r 2>&1 >> /home/debian/bioconductor.log
-  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor.r >> /home/${BIOUSER}/bioconductor.log"
+  su - "${DEFUSER}" -c "cd $TMP_DIR ; Rscript bioconductor.r >> /home/${DEFUSER}/bioconductor.log"
 
 
   # packages2
@@ -483,7 +487,7 @@ install.packages(\"proj4\", dependencies=TRUE,quiet = FALSE,verbose = TRUE,updat
 install.packages(\"ggalt\", dependencies = T,quiet = FALSE,verbose = TRUE,update = TRUE, ask = FALSE)
 " >> "$TMP_DIR"/bioconductor2.r
 #cd "${TMP_DIR}"; Rscript bioconductor2.r 2>&1 >> /home/debian/bioconductor2.log
-su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor2.r >> /home/${BIOUSER}/bioconductor2.log"
+su - "${DEFUSER}" -c "cd $TMP_DIR ; Rscript bioconductor2.r >> /home/${DEFUSER}/bioconductor2.log"
 
 
 
@@ -521,7 +525,7 @@ BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor3.r
 #  cd "${TMP_DIR}"; Rscript bioconductor3.r 2>&1 >> /home/debian/bioconductor3.log
-  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor3.r >> /home/${BIOUSER}/bioconductor3.log"
+  su - "${DEFUSER}" -c "cd $TMP_DIR ; Rscript bioconductor3.r >> /home/${DEFUSER}/bioconductor3.log"
 
 
 
@@ -550,7 +554,7 @@ BiocManager::valid()
 BiocManager::install(update = TRUE, ask = FALSE)
 BiocManager::valid()" >> "$TMP_DIR"/bioconductor4.r
 #  cd "${TMP_DIR}"; Rscript bioconductor4.r 2>&1 >> /home/debian/bioconductor4.log
-  su - "${BIOUSER}" -c "cd $TMP_DIR ; Rscript bioconductor4.r >> /home/${BIOUSER}/bioconductor4.log"
+  su - "${DEFUSER}" -c "cd $TMP_DIR ; Rscript bioconductor4.r >> /home/${DEFUSER}/bioconductor4.log"
 
 
   cd "$SCRIPTDIR"
