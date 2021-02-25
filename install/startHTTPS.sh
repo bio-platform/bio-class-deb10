@@ -141,7 +141,7 @@ if [[ -z "$NFS_STORAGE_BACKUP_HTTPS_DIR" ]] && ( [[ "$MODE" == "https" ]] || [[ 
   ERROR "NFS backup directory name for certificate backup is not defined, please verify ./conf/.conf file with configuration!"
   exit 1
 fi
-if [[ -z "${NFS_STORAGE_BACKUP_OS_VER_DIR}" ]]  ( [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]]);then
+if [[ -z "${NFS_STORAGE_BACKUP_OS_VER_DIR}" ]] && ( [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]]);then
   ERROR "NFS OS bioclass version directory name for certificate backup is not defined, please verify ./conf/.conf file with configuration!"
   exit 1
 fi

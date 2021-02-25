@@ -414,6 +414,30 @@ if (([[ -n "$BIOSW_RSTUDIO" ]] || [[ -n "$BIOSW_BIOCONDUCTOR" ]] )&& [[ "$MODE" 
   #packages2
   apt-get install -y libharfbuzz-dev libfribidi-dev libmagick++-dev libproj-dev libgdal-dev proj-bin libgit2-27 libgit2-dev
 
+  # packages3
+  apt-get -y install libv8-dev libzmq3-dev
+
+  #File-ShareDir
+  apt-get -y install cpanminus
+  cpanm -S inc::latest
+
+  #V8
+  apt-get -y install libv8-dev
+
+  #rJava
+  apt-get install -y default-jre default-jdk
+  R CMD javareconf
+
+  #gifski
+  apt-get -y install cargo
+
+  #units
+  apt-get -y install libudunits2-dev
+
+  #clustermq
+  apt-get -y install libzmq3-dev
+
+
   update_sources ;
 fi
 
