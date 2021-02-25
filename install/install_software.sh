@@ -726,7 +726,7 @@ fi
 
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
   # Cron for backup
-  echo -e "* 1,13 * * * ${BIOUSER} public_ipv4=\$(curl -s http://169.254.169.254/2009-04-04/meta-data/public-ipv4 2>/dev/null | grep -E -o \"([0-9]{1,3}[\.]){3}[0-9]{1,3}\");nginxconf=\$(grep cert.pem /etc/nginx/nginx.conf) ;[ -n \"\$public_ipv4\" ] && [ -n \"\$nginxconf\" ] && [ -d "${NFS_HOME_PERSISTENT}/${BIOUSER}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" ] && cd /home/${BIOUSER}/HTTPS/ && /usr/bin/flock -w 10 /var/lock/bio-class/startHTTPS ./startHTTPS.sh -m backup >/dev/null 2>&1" > /etc/cron.d/backupHTTPS
+  echo -e "* 1,13 * * * ${BIOUSER} public_ipv4=\$(curl -s http://169.254.169.254/2009-04-04/meta-data/public-ipv4 2>/dev/null | grep -E -o \"([0-9]{1,3}[\.]){3}[0-9]{1,3}\");nginxconf=\$(grep cert.pem /etc/nginx/nginx.conf) ;[ -n \"\$public_ipv4\" ] && [ -n \"\$nginxconf\" ] && [ -d "${NFS_HOME_PERSISTENT}/${BIOUSER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" ] && cd /home/${BIOUSER}/HTTPS/ && /usr/bin/flock -w 10 /var/lock/bio-class/startHTTPS ./startHTTPS.sh -m backup >/dev/null 2>&1" > /etc/cron.d/backupHTTPS
 
   # Updates
   if [[ ! -f /etc/cron.d/updates ]];then
@@ -781,8 +781,8 @@ echo \"channels:
   echo -e "alias stopHTTPS='cd /home/${BIOUSER}/HTTPS && ./startHTTPS.sh -m http'" >> /home/"$BIOUSER"/.bashrc;
   echo -e "alias statusHTTPS='cd /home/${BIOUSER}/HTTPS && ./startHTTPS.sh -m status'" >> /home/"$BIOUSER"/.bashrc;
   echo -e "alias startHTTPSlocalCrt='cd /home/${BIOUSER}/HTTPS && ./startHTTPS.sh -m localcrt'" >> /home/"$BIOUSER"/.bashrc;
-  echo -e "alias backup2NFS='cd /home/${BIOUSER}/ && rsync -av --exclude rstudio-pass --exclude .bashrc --exclude HTTPS --exclude NFS --no-owner --no-group --no-perms --omit-dir-times --progress ~/  ${NFS_HOME_PERSISTENT}/${BIOUSER}'" >> /home/"$BIOUSER"/.bashrc;
-  echo -e "alias restoreFromNFS='cd /home/${BIOUSER}/ && rsync -av --exclude rstudio-pass --exclude .bashrc --exclude HTTPS --exclude NFS --no-owner --no-group --no-perms --omit-dir-times --progress ${NFS_HOME_PERSISTENT}/${BIOUSER}/ ~/'" >> /home/"$BIOUSER"/.bashrc;
+  echo -e "alias backup2NFS='cd /home/${BIOUSER}/ && rsync -av --exclude sra-data --exclude rstudio-pass --exclude .bashrc --exclude HTTPS --exclude NFS --no-owner --no-group --no-perms --omit-dir-times --progress ~/  ${NFS_HOME_PERSISTENT}/${BIOUSER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}'" >> /home/"$BIOUSER"/.bashrc;
+  echo -e "alias restoreFromNFS='cd /home/${BIOUSER}/ && rsync -av --exclude sra-data --exclude rstudio-pass --exclude .bashrc --exclude HTTPS --exclude NFS --no-owner --no-group --no-perms --omit-dir-times --progress ${NFS_HOME_PERSISTENT}/${BIOUSER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/ ~/'" >> /home/"$BIOUSER"/.bashrc;
   echo -e "alias statusBIOSW='/home/debian/bio-class/install/install_software_check.sh -m status'" >> /home/"$BIOUSER"/.bashrc;
   echo -e "alias updateBIOSW='/home/debian/bio-class/install/install_software_check.sh -m updateBIOSW'" >> /home/"$BIOUSER"/.bashrc;
   echo -e "alias updateOS='/home/debian/bio-class/install/install_software_check.sh -m updateOS'" >> /home/"$BIOUSER"/.bashrc;
