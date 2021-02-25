@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script used during packer image procedure
-PATH=$PATH;PATH+=":/bin" ;PATH+=":/usr/bin";PATH+=":/usr/sbin";PATH+=":/usr/local/bin"; 
+PATH=$PATH;PATH+=":/bin" ;PATH+=":/usr/bin";PATH+=":/usr/sbin";PATH+=":/usr/local/bin";
 dirname=$(dirname $0)
 cd "$dirname"
 dirname=$(dirname pwd)
@@ -93,7 +93,7 @@ else
 fi
 
 
-# List if cloned successfully                
+# List if cloned successfully
 ls -la /home/debian/bio-class
 
 # Change to repository
