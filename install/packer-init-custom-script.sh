@@ -12,7 +12,7 @@ LIB_DIR="$dirname"/../lib
 
 # Set owner as root for debian ssh key to avoid login. Einfra account from metadata should be used to mount NFS storage.
 # Uncomment here when finished development
-chown root: /home/debian/.ssh/authorized_keys
+# chown root: /home/debian/.ssh/authorized_keys
 
 # True to use deploy key or any other to download public repo
 PRIVATE_REPO=""
