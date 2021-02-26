@@ -863,9 +863,8 @@ if  (([[ -n "$BIOSW_GAA" ]] || [[ -n "$BIOSW_AGE" ]]) && [[ "$MODE" == "all" ]])
  
 fi
 
-if ([[ -n "$BIOSW_CONDA" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "post" ]]; then
-  source ${INSTALL_DIR}/miniconda/bin/activate ;
-  su - "${BIOUSER}" -c "conda install -y -c bioconda asciigenome"
+if [[ -n "$BIOSW_CONDA" ]] && ([[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]]); then
+  su - "${BIOUSER}" -c "source ${INSTALL_DIR}/miniconda/bin/activate ; conda install -y -c bioconda asciigenome"
 fi
 
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]]; then
