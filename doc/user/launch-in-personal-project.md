@@ -70,4 +70,4 @@ Using prepared image is a preferred way. Frontend appliacation is prepared to fu
   * Select available floating IP and confirm using button **Associate**
     ![Associate Floating IP](./../img/instance_associate_ip.png)
 * Login using your [SSH key as selected in Key pair above and Floating IP](./../../README.md#ssh-access)
-  * Set up [NFS and HTTPS](./../../README.md#nfs-and-https)
+  * Set up [NFS and HTTPS](./../../README.md#first-steps-after-login-nfs-https-and-updates)
