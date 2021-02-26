@@ -21,7 +21,11 @@ echo "Install patch if needed"
 
 # Patch
 
-
+tmp_installed=$(apt list --installed 2>/dev/null| egrep -v "^WARNING"| grep "libpng++-dev" | egrep -i "installed")
+if [[ -z "$tmp_installed" ]];then
+  #libpng++-dev
+  apt-get -y install libpng++-dev
+fi
 
 # Patch
 echo "Install patch has finished"
