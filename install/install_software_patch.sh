@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install patch if difference betweenprepared image/upstream repository versions
-PATH=$PATH;PATH+=":/bin" ;PATH+=":/usr/bin";PATH+=":/usr/sbin";PATH+=":/usr/local/bin"; 
+PATH=$PATH;PATH+=":/bin" ;PATH+=":/usr/bin";PATH+=":/usr/sbin";PATH+=":/usr/local/bin";
 dirname=$(dirname $0)
 cd "$dirname"
 SCRIPTDIR=$(pwd)
