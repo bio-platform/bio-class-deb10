@@ -331,7 +331,7 @@ elif [[ "$MODE" == "updateREPO" ]];then
     fi
     # Clone public repo
     cd "/home/debian/"
-    sudo git clone https://github.com/bio-platform/bio-class.git 2>&1
+    sudo git clone https://github.com/bio-platform/bio-class-deb10.git bio-class 2>&1
   fi
 
   cd /home/debian/;
