@@ -18,6 +18,13 @@ MODELIST="http https localcrt status backup restore renew"
 
 # Username from home directory
 USER=$(pwd | sed -rn "s/[/]*home[/]*([a-z0-9\-\_]+)[/]*.*/\1/p")
+BIOUSER=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_user |cut -f 2 -d ':' | tr -d ' ' | sed -rn "s/.*\"(.*)\".*/\1/p"| tr '[:upper:]' '[:lower:]')
+
+if [[ "$BIOUSER" != "$USER" ]];then
+  echo "Difference between USER $USER vs BIOUSER ${BIOUSER}, setting BIOUSER as USER"
+  USER="$BIOUSER"
+fi
+
 FORCE=
 
 # User executing this script
@@ -253,6 +260,8 @@ backup_certificate() {
   DEBUG "md5sum_remote: $md5sum_remote"
   if [[ "$md5sum_local" != "$md5sum_remote"  ]];then
     INFO "Copy backup to NFS"
+    # set permissions on tmp cert backup
+    sudo chown ${USER}:${NFS_HOME_PERSISTENT_USER_GROUP_PERM} /tmp/certBackup-${public_ipv4_2text}.tar.gz
     #cp /tmp/certBackup-${public_ipv4_2text}.tar.gz "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
     sudo rsync -av --no-perms --no-owner --no-group --omit-dir-times --delete --progress /tmp/certBackup-${public_ipv4_2text}.tar.gz "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
     sudo chmod 600 ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz
