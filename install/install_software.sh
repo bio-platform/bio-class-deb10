@@ -101,9 +101,9 @@ fi
 # If empty, then install all software
 BIOSW=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_sw |cut -f 2 -d ':' | tr -d ' ' | tr -d '"'| tr -d ',')
 if [[ "$BIOSW" == "none" ]];then
-  BIOSW_AGE="" ; BIOSW_GAA=""; BIOSW_CONDA=""; BIOSW_RSTUDIO="rstudio";
+  BIOSW_AGE="" ; BIOSW_GAA=""; BIOSW_CONDA=""; BIOSW_RSTUDIO="rstudio"; 
 elif [[ -z "$BIOSW" ]];then
-  BIOSW_AGE="age" ; BIOSW_GAA="gaa"; BIOSW_CONDA="conda" ; BIOSW_RSTUDIO="rstudio";
+  BIOSW_AGE="age" ; BIOSW_GAA="gaa"; BIOSW_CONDA="conda" ; BIOSW_RSTUDIO="rstudio";  BIOSW_BIOCONDUCTOR="bioconductor";
 else
   BIOSW_AGE=$(echo "$BIOSW" | egrep -i age | tr '[:upper:]' '[:lower:]') ;BIOSW_GAA=$(echo "$BIOSW" | egrep -i gaa | tr '[:upper:]' '[:lower:]');
   BIOSW_CONDA="conda" ; BIOSW_RSTUDIO="rstudio"; BIOSW_BIOCONDUCTOR="bioconductor";
