@@ -27,6 +27,14 @@ if [[ -z "$tmp_installed" ]];then
   apt-get -y install libpng++-dev
 fi
 
+# fail2ban
+if [[ -f ${CONF_DIR}/nginx-rstudio.conf ]];then
+  cp ${CONF_DIR}/nginx-rstudio.conf /etc/fail2ban/filter.d
+  for file in /etc/fail2ban/filter.d/nginx-rstudio.conf ; do \
+  chown root: $file ; \
+  chmod 644 $file ; done
+fi
+
 # Patch
 echo "Install patch has finished"
 
