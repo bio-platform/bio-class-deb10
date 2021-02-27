@@ -33,6 +33,7 @@ if [[ -f ${CONF_DIR}/nginx-rstudio.conf ]];then
   for file in /etc/fail2ban/filter.d/nginx-rstudio.conf ; do \
   chown root: $file ; \
   chmod 644 $file ; done
+  service fail2ban restart
 fi
 
 # Patch
