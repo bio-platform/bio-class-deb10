@@ -7,7 +7,7 @@ enabled = true
 logpath  = /var/log/auth.log
 #          localhost   AV UMG
 ignoreip = 127.0.0.1/8,147.231.144.0/22,147.231.150.0/24,147.231.47.144/28
-maxretry = 5
+maxretry = 15
 bantime  = 1800
 findtime = 900
 
@@ -19,7 +19,7 @@ filter   = sshd
 logpath  = /var/log/auth.log
 #          localhost   AV UMG
 ignoreip = 127.0.0.1/8,147.231.144.0/22,147.231.150.0/24,147.231.47.144/28
-maxretry = 5
+maxretry = 15
 bantime  = 1800
 findtime = 900
 

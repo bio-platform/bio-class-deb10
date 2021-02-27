@@ -956,6 +956,12 @@ echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAs6tYr4HfqtbP1VXsteIApUAW6GuodsFyCvK
   fi
   echo -e "\n\n"$tmp_text"\n\nRstudio available at "$floating_ip_text" using account "$BIOUSER" and password $(cat /home/"$BIOUSER"/rstudio-pass)\n\nFind out the current Rstudio URL using command \"statusHTTPS\"\n\nTo mount NFS storage execute \"startNFS\" using your MetaCentrum Cloud password, to umount \"stopNFS\" and to check current state \"statusNFS\"\n * After instance reboot execute \"startNFS\" again"$tmp_text_student"\n\nTo switch Rstudio from HTTP to HTTPS, run one of the following commands of your choice:\n * \"startHTTPS\" -  get a certificate from  Let’s Encrypt\n * \"startHTTPSlocalCrt\" - get self-signed certificate with OpenSSL (For Experienced Users Only)\n   (In Browser Allow Self Signed Certificate: button Advanced -> Add Exception / Accept the Risk and Continue)\n * To switch back to unsecured HTTP execute command \"stopHTTPS\"\n * Find out the current Rstudio URL using command \"statusHTTPS\"\n\nTo see list of installed software execute \"statusBIOSW\", to update \"updateBIOSW\"\n\nTo update operating system execute \"updateOS\"\n\nTo update service repository with maintenance scripts execute\"updateREPO\"\n\nTo activate conda execute command \"startConda\", to deactivete \"stopConda\"\n\nTo backup you home directory with lesson results to NFS execute \"backup2NFS\", to restore \"restoreFromNFS\"\n   (Nothing is deleted on the other side, add --delete in .bashrc alias if you wish to perform delete during rsync (For Experienced Users Only))\n\nGuide with detailed information is available at https://github.com/bio-platform/bio-class-deb10/blob/main/README.md\n\n" > /etc/motd
 
+  # Ignoreip for fail2ban
+  BIOSW_IPV4=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_ipv4 |cut -f 2 -d ':' | tr -d ' ' | sed -rn "s/.*\"(.*)\".*/\1/p"| tr '[:upper:]' '[:lower:]' | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3})
+  if [[ -n "$BIOSW_IPV4" ]] && [[ -f /etc/fail2ban/jail.local ]];then
+    sed -i '/ignoreip/s/$/ '"$BIOSW_IPV4"'/' /etc/fail2ban/jail.local
+    service fail2ban restart
+  fi
 
 fi
 
