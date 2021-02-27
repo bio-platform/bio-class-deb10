@@ -62,6 +62,7 @@ Using prepared image is a preferred way. Frontend appliacation is prepared to fu
     * In Metada insert variables:
         * *Bioclass_user* containg your login
         * *Bioclass_email* containing your email
+        * (Optional) *Bioclass_ipv4* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) to prevent Fail2ban to block you because of your too many failed login attempts
         * Proceed with **Launch button**
     ![Metadata](./../img/instance_launch_metadata.png)
 * Wait until instance initialization finished and Associate Floating IP
