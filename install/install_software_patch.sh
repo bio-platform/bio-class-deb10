@@ -29,6 +29,7 @@ fi
 
 # fail2ban
 if [[ -f ${CONF_DIR}/nginx-rstudio.conf ]] && [[ -f ${CONF_DIR}/jail.local ]];then
+  echo "Going to copy updated nginx-rstudio.conf and jail.local"
   cp ${CONF_DIR}/jail.local /etc/fail2ban
   cp ${CONF_DIR}/nginx-rstudio.conf /etc/fail2ban/filter.d
   for file in /etc/fail2ban/filter.d/nginx-rstudio.conf /etc/fail2ban/jail.local ; do \
