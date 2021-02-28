@@ -228,6 +228,21 @@ if [[ "$MODE" == "status" ]];then
   command_status="$?"
   function_echo_output
 
+  SW_NAME="Tmux"
+  command_output=$(tmux -V)
+  command_status="$?"
+  function_echo_output
+
+  SW_NAME="Miira"
+  command_output=$(mira --version)
+  command_status="$?"
+  function_echo_output
+
+  SW_NAME="ASCIIGenome"
+  command_output=$(conda list | egrep asciigenome)
+  command_status="$?"
+  function_echo_output
+
   SW_NAME="BiocManager"
   command_output=$(Rscript -e "BiocManager::version()")
   command_status="$?"
