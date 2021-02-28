@@ -233,8 +233,13 @@ if [[ "$MODE" == "status" ]];then
   command_status="$?"
   function_echo_output
 
-  SW_NAME="Miira"
-  command_output=$(mira --version)
+  SW_NAME="Micro"
+  command_output=$(micro -version 2>&1 |egrep "Version")
+  command_status="$?"
+  function_echo_output
+
+  SW_NAME="Fishshell"
+  command_output=$(fish --version)
   command_status="$?"
   function_echo_output
 
