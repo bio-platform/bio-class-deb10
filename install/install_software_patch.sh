@@ -28,9 +28,10 @@ if [[ -z "$tmp_installed" ]];then
 fi
 
 # fail2ban
-if [[ -f ${CONF_DIR}/nginx-rstudio.conf ]];then
+if [[ -f ${CONF_DIR}/nginx-rstudio.conf ]] && [[ -f ${CONF_DIR}/jail.local ]];then
+  cp ${CONF_DIR}/jail.local /etc/fail2ban
   cp ${CONF_DIR}/nginx-rstudio.conf /etc/fail2ban/filter.d
-  for file in /etc/fail2ban/filter.d/nginx-rstudio.conf ; do \
+  for file in /etc/fail2ban/filter.d/nginx-rstudio.conf /etc/fail2ban/jail.local ; do \
   chown root: $file ; \
   chmod 644 $file ; done
   service fail2ban restart
