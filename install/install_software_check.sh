@@ -234,8 +234,6 @@ if [[ "$MODE" == "status" ]];then
   function_echo_output
 
   SW_NAME="Micro"
-  echo ""
-  echo ""
   command_output=$(micro -version 2>&1 |egrep "Version")
   command_status="$?"
   function_echo_output
