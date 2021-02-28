@@ -239,6 +239,8 @@ if [[ "$MODE" == "status" ]];then
   function_echo_output
 
   SW_NAME="Fishshell"
+  echo ""
+  echo ""
   command_output=$(fish --version)
   command_status="$?"
   function_echo_output
