@@ -119,6 +119,7 @@ echo "BIOSW_GAA: $BIOSW_GAA"
 echo "BIOSW_CONDA: $BIOSW_CONDA"
 echo "BIOSW_RSTUDIO: $BIOSW_RSTUDIO"
 echo "BIOSW_BIOCONDUCTOR: $BIOSW_BIOCONDUCTOR"
+echo "BIOCLASS FOR DEBIAN 10"
 
 if [[ "$MODE" == "pre" ]] || [[ "$MODE" == "all" ]];then
   useradd -m "$BIOUSER"
