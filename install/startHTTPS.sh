@@ -249,6 +249,17 @@ backup_certificate() {
     DEBUG "Backup previous archive to ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
     md5sum_remote=$(sudo md5sum ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz | cut -f 1 -d ' ')
     DEBUG "md5sum_remote: $md5sum_remote"
+    tmp_dir=$(pwd)
+    DEBUG "dir: $tmp_dir"
+    cd "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
+    TMPFILE=`timeout 60 mktemp .placeholder-XXXXXX`
+    if [[ $? -ne 0 ]];then
+      DEBUG "TMPFILE: $TMPFILE"
+      ERROR "Unable to create temporary file on NFS during backup of previous certificate archive"
+      exit 1
+    fi
+    cd $tmp_dir
+    DEBUG "dir: $tmp_dir"
     sudo mv -f "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz" "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
   fi
   cd /tmp/
@@ -259,6 +270,20 @@ backup_certificate() {
   DEBUG "md5sum_local: $md5sum_local"
   DEBUG "md5sum_remote: $md5sum_remote"
   if [[ "$md5sum_local" != "$md5sum_remote"  ]];then
+    tmp_dir=$(pwd)
+    DEBUG "dir: $tmp_dir"
+    cd "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
+    TMPFILE=`timeout 60 mktemp .placeholder-XXXXXX`
+    if [[ $? -ne 0 ]];then
+      DEBUG "TMPFILE: $TMPFILE"
+      ERROR "Unable to create temporary file on NFS before rsync of certificate archive"
+      cd $tmp_dir
+      DEBUG "dir: $tmp_dir"
+      exit 1
+    fi
+    cd $tmp_dir
+    DEBUG "dir: $tmp_dir"
+    cd /tmp/
     INFO "Copy backup to NFS"
     # set permissions on tmp cert backup
     sudo chown ${USER}:${NFS_HOME_PERSISTENT_USER_GROUP_PERM} /tmp/certBackup-${public_ipv4_2text}.tar.gz
