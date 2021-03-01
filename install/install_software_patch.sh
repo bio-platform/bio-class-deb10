@@ -46,6 +46,22 @@ if [[ -n "$BIOSW_IPV4" ]] && [[ -f /etc/fail2ban/jail.local ]];then
   service fail2ban restart
 fi
 
+#Fix: nfs issue #852196
+if [[ ! -f /etc/modprobe.d/nfs_clientid.conf ]];then
+  tmp_uuid=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep "uuid" |cut -f 2 -d ':' | tr -d ' ' | tr -d '"'| tr -d ',')
+  echo "Openstack instance uuid: $tmp_uuid"
+  if [[ -z "$tmp_uuid=" ]] ;then
+    apt-get -y install uuid-runtime
+    tmp_uuid=$(uuidgen)
+    echo "Uuidgen uuid: $tmp_uuid"
+  fi
+  if [[ -n "$tmp_uuid" ]] ;then
+    echo "Set $tmp_uuid to /etc/modprobe.d/nfs_clientid.conf"
+    echo -e "$tmp_uuid" >  /etc/modprobe.d/nfs_clientid.conf
+    chown root: /etc/modprobe.d/nfs_clientid.conf
+    chmod 644 /etc/modprobe.d/nfs_clientid.conf
+  fi
+fi
 
 # Patch
 echo "Install patch has finished"
