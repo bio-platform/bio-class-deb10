@@ -47,7 +47,8 @@ if [[ -n "$BIOSW_IPV4" ]] && [[ -f /etc/fail2ban/jail.local ]];then
 fi
 
 #Fix: nfs issue #852196
-if [[ ! -f /etc/modprobe.d/nfs_clientid.conf ]];then
+tmp_nfs_clientid_conf=$(sed -rn "s/^options nfs nfs4_unique_id=(.*)$/\1/p" /etc/modprobe.d/nfs_clientid.conf)
+if [[ ! -f /etc/modprobe.d/nfs_clientid.conf ]] || [[ -z "$tmp_nfs_clientid_conf" ]];then
   tmp_uuid=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep "uuid" |cut -f 2 -d ':' | tr -d ' ' | tr -d '"'| tr -d ',')
   echo "Openstack instance uuid: $tmp_uuid"
   if [[ -z "$tmp_uuid=" ]] ;then
@@ -57,9 +58,14 @@ if [[ ! -f /etc/modprobe.d/nfs_clientid.conf ]];then
   fi
   if [[ -n "$tmp_uuid" ]] ;then
     echo "Set $tmp_uuid to /etc/modprobe.d/nfs_clientid.conf"
-    echo -e "$tmp_uuid" >  /etc/modprobe.d/nfs_clientid.conf
+    echo -e "options nfs nfs4_unique_id=${tmp_uuid}" >  /etc/modprobe.d/nfs_clientid.conf
     chown root: /etc/modprobe.d/nfs_clientid.conf
     chmod 644 /etc/modprobe.d/nfs_clientid.conf
+    umount -f /data
+    rmmod nfsv4
+    rmmod nfs
+    modprobe nfs
+    mount /data
   fi
 fi
 
