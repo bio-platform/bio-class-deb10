@@ -41,6 +41,8 @@ fi
 # Ignoreip for fail2ban
 BIOSW_IPV4=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_ipv4 |cut -f 2 -d ':' | tr -d ' ' | sed -rn "s/.*\"(.*)\".*/\1/p"| tr '[:upper:]' '[:lower:]' | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 tmp_ipv4_jail_local=$(egrep "$BIOSW_IPV4" /etc/fail2ban/jail.local)
+echo "BIOSW_IPV4: $BIOSW_IPV4"
+echo "tmp_ipv4_jail_local: $tmp_ipv4_jail_local"
 if [[ -n "$BIOSW_IPV4" ]] && [[ -f /etc/fail2ban/jail.local ]] && [[ -z "$tmp_ipv4_jail_local" ]];then
   echo "Inserting $BIOSW_IPV4 into Fail2ban ignoreip"
   sed -i '/ignoreip/s/$/ '"$BIOSW_IPV4"'/' /etc/fail2ban/jail.local
