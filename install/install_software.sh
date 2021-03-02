@@ -699,8 +699,8 @@ fi
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]]; then
   update_sources ; apt-get -y install nginx ;
   # certbot
-  echo "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
-  update_sources ; apt-get -y install certbot python-certbot-nginx -t stretch-backports
+  echo "deb http://deb.debian.org/debian buster-backports main" > /etc/apt/sources.list.d/backports.list
+  update_sources ; apt-get -y install certbot python-certbot-nginx -t buster-backports
 
   cp ${CONF_DIR}/index.nginx-debian.html /var/www/html/
   if [[ -f /var/www/html/index.nginx-debian.html ]];then

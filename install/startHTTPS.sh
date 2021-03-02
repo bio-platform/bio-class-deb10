@@ -510,7 +510,7 @@ elif  [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]];then
   # Add backports to your sources.list
   if [[ -z "$backports_list_present" ]]; then
     DEBUG "Add /etc/apt/sources.list.d/backports.list"
-    command_output=$(echo "deb http://deb.debian.org/debian stretch-backports main" | sudo tee -a /etc/apt/sources.list.d/backports.list 2>&1)
+    command_output=$(echo "deb http://deb.debian.org/debian buster-backports main" | sudo tee -a /etc/apt/sources.list.d/backports.list 2>&1)
     DEBUG "command_output: $command_output"
     command_output=$(sudo apt-get update 2>&1)
     DEBUG "command_output: $command_output"
@@ -527,7 +527,7 @@ elif  [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]];then
   # Install a package from backports
   if [[ -z "$certbot_installed" ]] || [[ -z "$python_certbot_nginx_installed" ]];then
     DEBUG "Install certbot"
-    command_output=$(sudo apt-get update; apt-get -y install certbot python-certbot-nginx -t stretch-backports 2>&1)
+    command_output=$(sudo apt-get update; apt-get -y install certbot python-certbot-nginx -t buster-backports 2>&1)
     DEBUG "command_output: $command_output"
   fi
 
