@@ -258,6 +258,11 @@ backup_certificate() {
       ERROR "Unable to create temporary file on NFS during backup of previous certificate archive"
       exit 1
     fi
+    rm $TMPFILE
+    if [[ $? -ne 0 ]];then
+      ERROR "Temporary file created, but NOT deleted"
+      exit 1
+    fi
     cd $tmp_dir
     DEBUG "dir: $tmp_dir"
     sudo mv -f "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz" "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
@@ -279,6 +284,11 @@ backup_certificate() {
       ERROR "Unable to create temporary file on NFS before rsync of certificate archive"
       cd $tmp_dir
       DEBUG "dir: $tmp_dir"
+      exit 1
+    fi
+    rm $TMPFILE
+    if [[ $? -ne 0 ]];then
+      ERROR "Temporary file created, but NOT deleted"
       exit 1
     fi
     cd $tmp_dir
