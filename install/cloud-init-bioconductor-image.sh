@@ -30,7 +30,23 @@ tmp_issuenet=$(sudo cat /etc/issue.net)
 # Rstudio
 tmp_rstudio_server=$(/usr/sbin/rstudio-server status 2>/dev/null | egrep active )
 tmp_rstudio_exists=$(/usr/bin/which rstudio-server | egrep rstudio-server 2>/dev/null)
-if [[ -z "$tmp_rstudio_exists" ]] && [[ -z "$tmp_rstudio_server" ]] ;then
+# BIOUSER
+BIOUSER=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | egrep -i Bioclass_user )
+
+if [[ -z "$BIOUSER" ]] ;then
+echo -e "####################################################################
+#                                                                  #
+# ERROR - Bioclass_user NOT FOUD IN METADATA, REQUIRED FOR LOGIN   #
+#                                                                  #
+#                                                                  #
+# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT             #
+#                                                                  #
+####################################################################" > /etc/issue.net
+  echo "------------------------"
+  echo "ERROR - Bioclass_user NOT FOUD IN METADATA, REQUIRED FOR LOGIN"
+  echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT"
+  echo "------------------------"
+elif [[ -z "$tmp_rstudio_exists" ]] && [[ -z "$tmp_rstudio_server" ]] ;then
 echo -e "####################################################################
 #                                                                  #
 # ERROR - RSTUDIO SERVER NOT FOUND, BIOCONDUCTOR IMAGE REQUIRED    #
@@ -68,7 +84,7 @@ fi
 sed -i 's/#Banner none$/Banner \/etc\/issue.net/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
-if [[ $tmp_ver -ne $tmp_req_ver ]] || [[ -z "$tmp_rstudio_exists" ]] || [[ -z "$tmp_rstudio_server" ]];then
+if [[ $tmp_ver -ne $tmp_req_ver ]] || [[ -z "$tmp_rstudio_exists" ]] || [[ -z "$tmp_rstudio_server" ]] || [[ -z "$BIOUSER" ]];then
   echo "Exiting from CUSTOM CLOUD INIT SCRIPT FOR BIOCONDUCTOR"
   exit 1
 fi
