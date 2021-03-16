@@ -27,7 +27,23 @@ echo "BIO-CLASS VERSION $tmp_req_ver"
 
 # Set SSH Warning Message to Users
 tmp_issuenet=$(sudo cat /etc/issue.net)
-if [[ $tmp_ver -ne $tmp_req_ver ]];then
+# Rstudio
+tmp_rstudio_server=$(/usr/sbin/rstudio-server status 2>/dev/null | egrep active )
+tmp_rstudio_exists=$(/usr/bin/which rstudio-server | egrep rstudio-server 2>/dev/null)
+if [[ -z "$tmp_rstudio_exists" ]] && [[ -z "$tmp_rstudio_server" ]] ;then
+echo -e "####################################################################
+#                                                                  #
+# ERROR - RSTUDIO SERVER NOT FOUND, BIOCONDUCTOR IMAGE REQUIRED    #
+#                                                                  #
+#                                                                  #
+# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT             #
+#                                                                  #
+####################################################################" > /etc/issue.net
+  echo "------------------------"
+  echo "ERROR - RSTUDIO SERVER NOT FOUND, BIOCONDUCTOR IMAGE REQUIRED"
+  echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT"
+  echo "------------------------"
+elif [[ $tmp_ver -ne $tmp_req_ver ]];then
 echo -e "####################################################################
 #                                                                  #
 # ERROR - DEBIAN IS VERSION $tmp_ver BUT FOR SELECTED BIOCONDUCTOR IS REQUIRED VERSION $tmp_req_ver #
@@ -37,7 +53,7 @@ echo -e "####################################################################
 #                                                                  #
 ####################################################################" > /etc/issue.net
   echo "------------------------"
-  echo "ERROR - DEBIAN IS VERSION $tmp_ver" BUT FOR SELECTED BIOCONDUCTOR IS REQUIRED VERSION $tmp_req_ver
+  echo "ERROR - DEBIAN IS VERSION $tmp_ver BUT FOR SELECTED BIOCONDUCTOR IS REQUIRED VERSION $tmp_req_ver"
   echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT FOR $tmp_req_repo"
   echo "------------------------"
 else
@@ -52,7 +68,7 @@ fi
 sed -i 's/#Banner none$/Banner \/etc\/issue.net/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
-if [[ $tmp_ver -ne $tmp_req_ver ]];then
+if [[ $tmp_ver -ne $tmp_req_ver ]] || [[ -z "$tmp_rstudio_exists" ]] || [[ -z "$tmp_rstudio_server" ]];then
   echo "Exiting from CUSTOM CLOUD INIT SCRIPT FOR BIOCONDUCTOR"
   exit 1
 fi
