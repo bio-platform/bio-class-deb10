@@ -17,7 +17,7 @@ chown root: /home/debian/.ssh/authorized_keys
 # True to use deploy key or any other to download public repo
 PRIVATE_REPO=""
 
-apt-get update; apt-get -y install curl ; apt-get update;
+apt-get update; apt-get -y install apg curl wget rsync mc ; apt-get update;
 
 echo "------------------------"
 echo "Checking Debian OS version versus github bio-class repository version"
