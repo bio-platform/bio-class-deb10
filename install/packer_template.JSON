@@ -3,11 +3,12 @@
   "type": "openstack",
   "communicator": "ssh",
   "ssh_keypair_name": "packer-key",
+  "ssh_timeout": "10m",
   "ssh_private_key_file": "~/.ssh/packer_id_rsa",
   "floating_ip": "a295c4e1-147a-4553-a2e4-35fdacb7152c",
   "networks": "f9768752-b0bd-4812-9af7-8622f9ac29e3",
   "ssh_username": "debian",
-  "image_name": "debian-10-x86_64_bioconductor",
+  "image_name": "debian-10-x86_64_bioconductor_new",
   "source_image": "bbe44bf3-b504-4a63-94f0-e51a69d9b7ba",
   "flavor": "e7a3872a-cc28-48cc-9647-985acf5dce1d"
 }],

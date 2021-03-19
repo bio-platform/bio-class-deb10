@@ -10,6 +10,12 @@ Use prepared image debian-10-x86_64_bioconductor containing all required softwar
 
 ### SSH Access
 Connect to the instance using your [login](https://cloud.gitlab-pages.ics.muni.cz/documentation/register/), [id_rsa key registered in Openstack](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/#create-key-pair) or see [Key pair check](./doc/user/launch-in-personal-project.md#key-pair) and [Floating IP in Openstack](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/#associate-floating-ip) or see [Floating IP check](./doc/user/launch-in-personal-project.md#floating-ip):
+
+* Remove instance host key if previous instance launch using associated *Floating IP*:
+```
+ssh-keygen -f ~/.ssh/known_hosts -R "<Floating IP>"
+```
+* Login to the instance using your *login* and associated *Floating IP*:
 ```
 ssh -A -X -i ~/.ssh/id_rsa <login>@<Floating IP>
 ```
@@ -23,6 +29,8 @@ Password is located at file `/home/<login>/rstudio-pass`.
 All required steps are listed in MOTD after login including password.
 
 ### First steps after login (NFS, HTTPS and Updates)
+First ask your teacher to add your login to the group bioconductor. This is required to access directories.
+
 There are only two steps to proceed with after instance launch using prepared image:
 * Start NFS running command `startNFS`
     * Project directory is located under /data/ on your instance and /storage/projects/bioconductor/ on [frontend](https://wiki.metacentrum.cz/wiki/Frontend)
@@ -62,14 +70,21 @@ There are only two steps to proceed with after instance launch using prepared im
 * Backup home directory to NFS
   * Backup your home directory to NFS executing `backup2NFS`
   * Restore data back to the instance executing `restoreFromNFS` (For Experienced Users Only)
+  * Please note that in this Debian 10 version backup directory is located under /data/persistent/<your_login>/bio-class-deb10/
 
-* For security reasons failed login attempt limits are realized, so after exceeding this limit your IP address may be blocked for some time. See more below in section [Fail2ban](#fail2ban)
+* For security reasons failed login attempt limits are realized, so after exceeding this limit your IP address may be blocked for some time. See more below in section [Fail2ban](#fail2ban). To prevent ban you can insert your public IPv4 addresses (Office/Home/VPN etc) into [Metadata](#unban-your-public-ip).
 
 * Support
   * Send email to [cloud@metacentrum.cz](mailto:cloud@metacentrum.cz?subject=Bioconductor), do not forget to mention Bioconductor in Subject field
   * Use Request tracker to [create new ticket](https://rt.cesnet.cz/rt/Ticket/Create.html?Queue=27&Subject=Bioconductor&Content=Issue%20with%20Bioconductor)
-    * After login follow the link "klikněte zde pro povedení Vaší žádosti/click here to resume your request"
+    * After login follow the link "klikněte zde pro provedení Vaší žádosti/click here to resume your request"
     * Write down your issue and confirm using button "Vytvořit/Create"
+  * #### In your support request please include detailed procedure of your issue with:
+    * Login attempt with degug information `ssh -vvv -A -Y -X -i ~/.ssh/id_rsa <login>@<Floating IP>`
+    * Existing instances list - [Open Project](https://cloud.muni.cz/) -> Compute -> Instances as printscreen
+    * Instance log - [Open Project](https://cloud.muni.cz/) -> Compute -> Instances -> click on instance Name -> submenu *Log* -> button *View Full Log* and attach it as plain text document
+    * Instance Overview - [Open Project](https://cloud.muni.cz/) -> Compute -> Instances -> click on instance Name -> submenu Overview -> sections *Specs*, *IP Addresses*, *Security Groups*, *Metadata* or printscreen of this tab
+    * Command `statusBIOSW` output and attach it as plain text document
 
 ### Tips/FAQ
 
@@ -290,10 +305,25 @@ system('sudo iptables -n -L')
 system('sudo fail2ban-client set ssh unbanip NNN.NNN.NNN.NNN')
 system('sudo fail2ban-client set sshd unbanip NNN.NNN.NNN.NNN')
 system('sudo fail2ban-client set nginx-rstudio unbanip NNN.NNN.NNN.NNN')
+system('sudo fail2ban-client set nginx-rstudio repeat-offender NNN.NNN.NNN.NNN')
+system('sudo fail2ban-client set nginx-rstudio repeat-offender-found NNN.NNN.NNN.NNN')
+system('sudo fail2ban-client set nginx-rstudio repeat-offender-pers NNN.NNN.NNN.NNN')
 ```
 
-If more Bans during 5 hours, then whole access should be blocked for 24 hours!
-If more failing SSH attempts during 24 hours, then whole access should be blocked for 7*24 hours!
+##### Unban Your Public Ip
+In case of too many failed attempts (anyone from your subnet behind public IP address) insert your home computer public IPv4 into instance Metadata. You can change once inserted address at any time again.
+
+* [Open Project](https://cloud.muni.cz/) -> Compute -> Instances and use button on the right of your instance
+* Click on down arrow and select Update Metadata
+* In Metada dialog insert new variable *Bioclass_ipv4* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) or edit existing variable to a new value
+  * Multiple addresses may be inserted with comma as delimiter e.g. `101.101.101.101,102.102.102.102/32,103.103.103.0/24`
+  * To remove variable with addresses use button *-* on the right
+* Proceed with **Save** button
+* Wait for approximately 10 minutes until your IP address is inserted into Fail2Ban configuration and service has to be restarted
+![Update Metadata](./doc/img/instance_metadata_public_ipv4.png)
+
+If more Bans during 24 hours, then whole access should be blocked for 24 hours!
+If more failing SSH attempts during 7*24 hours, then whole access should be blocked for 7*24 hours!
 
 #### Tmux
 *  You may open Tmux session using `tmux` or attach to the existing Tmux session by `tmux attach`. Tmux can prevent updates break if your local computer for example loose connection. Another example is executing bash commands with long run time

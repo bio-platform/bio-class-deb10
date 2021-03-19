@@ -56,7 +56,7 @@ if [[ "$PRIVATE_REPO" == "true" ]];then
 
   echo -e "# GitLab.com server
 Host gitlab.com
-RSAAuthentication yes
+PubkeyAuthentication yes
 IdentityFile /root/.ssh/id_rsa
 StrictHostKeyChecking no
 UserKnownHostsFile=/dev/null" > ~/.ssh/config
