@@ -49,7 +49,7 @@ Parameters:
    localcrt - In case of changing Floating IP, set up local certificate to use HTTPS instead of unsecured HTTP. Please note that server's certificate in this case is not trusted in browsers and you definitely need to manually allow Continue to <Floating IP> (Not secured) to show page. (For Experienced Users Only)
    backup - Backup Let's Encrypt certificate to NFS storage.
    restore - Restore Let's Encrypt certificate backup from NFS storage to local disc.
--f Force 
+-f Force - Only to use with mode https when removed certificate backup file on NFS (For experienced users only!) to obtain fully new one certificate
 -v Verbose output.
 
 Example how to mount NFS storage at first login using your META password:
@@ -227,9 +227,13 @@ checkstate() {
     cert_path=$(sudo find /etc/letsencrypt/live/ -name cert.pem 2>/dev/null | head -n 1)
     key_path=$(sudo find /etc/letsencrypt/live/ -name privkey.pem 2>/dev/null | head -n 1)
     nginx_installed=$(sudo dpkg -s nginx | grep Status | egrep "Status: install ok installed")
-    backports_list_present=$(sudo find /etc/apt/sources.list.d/backports.list)
+    backports_list_present_sources=$(sudo egrep "debian buster-backports main" /etc/apt/sources.list | egrep -v "^#")
+    backports_list_present=$(sudo find /etc/apt/sources.list.d/backports.list 2>/dev/null)
+    if [[ -z "$backports_list_present" ]] && [[ -n "$backports_list_present_sources" ]];then
+      backports_list_present="$backports_list_present_sources"
+    fi
     certbot_installed=$(sudo dpkg -s certbot | grep Status | egrep "Status: install ok installed")
-    python_certbot_nginx_installed=$(sudo dpkg -s "python-certbot-nginx" | grep "Status" )
+    python_certbot_nginx_installed=$(sudo dpkg -s "python3-certbot-nginx" | grep "Status" )
     localcrt=$(find /etc/nginx/ -maxdepth 1 -name cert.crt -type f )
     localkey=$(find /etc/nginx/ -maxdepth 1 -name cert.key -type f )
     nginx_conf_https=$(sudo egrep "cert.pem" /etc/nginx/nginx.conf 2>/dev/null)
@@ -520,11 +524,28 @@ elif  [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]];then
   # Add backports to your sources.list
   if [[ -z "$backports_list_present" ]]; then
     DEBUG "Add /etc/apt/sources.list.d/backports.list"
-    command_output=$(echo "deb http://deb.debian.org/debian stretch-backports main" | sudo tee -a /etc/apt/sources.list.d/backports.list 2>&1)
+    command_output=$(echo "deb http://deb.debian.org/debian buster-backports main" | sudo tee -a /etc/apt/sources.list.d/backports.list 2>&1)
     DEBUG "command_output: $command_output"
     command_output=$(sudo apt-get update 2>&1)
     DEBUG "command_output: $command_output"
-
+  else
+    tmp_buster_backports=$(egrep "debian buster-backports main" /etc/apt/sources.list | egrep -v "^#")
+    tmp_stretch_backports=$(egrep "debian stretch-backports main" /etc/apt/sources.list.d/backports.list 2>/dev/null)
+    if [[ -f /etc/apt/sources.list.d/backports.list ]] && [[ -n "$tmp_buster_backports" ]] && [[ -n "$tmp_stretch_backports" ]];then
+      tmp_nginx_running=$(service nginx status | grep active | grep running)
+      if [[ -n "$tmp_nginx_running" ]];then
+        sudo service nginx stop
+      fi
+      sudo rm -rf /etc/apt/sources.list.d/backports.list
+      sudo apt remove -y python-certbot-nginx
+      sudo apt-get update
+      sudo apt-get -y install python3-acme python3-certbot python3-mock python3-openssl python3-pkg-resources python3-pyparsing python3-zope.interface
+      sudo apt-get update
+      sudo apt-get -y install certbot python3-certbot-nginx -t buster-backports
+      if [[ -n "$tmp_nginx_running" ]];then
+        sudo service nginx start
+      fi
+    fi
   fi
 
   # Install Nginx
@@ -537,7 +558,9 @@ elif  [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]];then
   # Install a package from backports
   if [[ -z "$certbot_installed" ]] || [[ -z "$python_certbot_nginx_installed" ]];then
     DEBUG "Install certbot"
-    command_output=$(sudo apt-get update; apt-get -y install certbot python-certbot-nginx -t stretch-backports 2>&1)
+    sudo apt-get update
+    sudo apt-get -y install python3-acme python3-certbot python3-mock python3-openssl python3-pkg-resources python3-pyparsing python3-zope.interface
+    command_output=$(sudo apt-get update; apt-get -y install certbot python3-certbot-nginx -t buster-backports 2>&1)
     DEBUG "command_output: $command_output"
   fi
 

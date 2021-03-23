@@ -5,6 +5,7 @@ Using prepared image is a preferred way. Frontend appliacation is prepared to fu
 * Follow the instructions [Quick Start](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/)
   * Check Router, obtain Floating IP, update Security Group
     * Check if Router contain External Network *public-cesnet-78-128-250-PERSONAL*
+      * *This step is OPTIONAL* and proceed with it only if issues with network. This is not needed if you are a new user because this step is managed automatically.
       * Open Project -> Network -> Routers
       * If other setting, then use button *Clear Gateway*, confirm *Clear Gateway*
       * Select network *public-cesnet-78-128-250-PERSONAL* and *Submit*
@@ -62,7 +63,7 @@ Using prepared image is a preferred way. Frontend appliacation is prepared to fu
     * In Metada insert variables:
         * *Bioclass_user* containg your login
         * *Bioclass_email* containing your email
-        * (Optional) *Bioclass_ipv4* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) to prevent Fail2ban to block you because of your too many failed login attempts
+        * (Optional) *[Bioclass_ipv4](./../../README.md#unban-your-public-ip)* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) to prevent Fail2ban to block you because of too many failed login attempts ([Can be changed later and multiple addresses may be inserted with comma as delimiter e.g. 101.101.101.101,102.102.102.102/32,103.103.103.0/24](./../../README.md#unban-your-public-ip))
         * Proceed with **Launch button**
     ![Metadata](./../img/instance_launch_metadata.png)
 * Wait until instance initialization finished and Associate Floating IP

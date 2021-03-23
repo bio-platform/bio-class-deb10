@@ -26,10 +26,16 @@ The interface for manual startup and necessary settings that the frontend is not
   * Wait until the machine launch has finished. Confirm Allocate Floating IP
     * ![Floating IP](./../img/frontend_allocate_fl_ip.png)
     * Connect to the instance using your login, id_rsa key registered in Openstack and Floating IP
-    * To prevent Fail2ban to block you because of your too many failed login attempts, you may to insert your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) into Metadata:
-      * Use button on the right in the instance list and select choice *Update Metadata*
-      * Name for new metadata entry is *Bioclass_ipv4*
-      * As value insert your public IPv4 address
+    * To prevent Fail2ban to block you because of too many failed login attempts, you may insert new variable *Bioclass_ipv4* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) or edit existing variable to a new value
+      * [Open Project](https://cloud.muni.cz/) -> Compute -> Instances and use button on the right of your instance 
+      * Click on down arrow and select Update Metadata
+      * Click on down arrow and select Update Metadata
+      * In Metada dialog insert new variable *Bioclass_ipv4* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) or edit existing variable to a new value
+        * Multiple addresses may be inserted with comma as delimiter e.g. `101.101.101.101,102.102.102.102/32,103.103.103.0/24`
+        * To remove variable with addresses use button *-* on the right
+      * Proceed with **Save** button
+      * Wait for approximately 10 minutes until your IP address is inserted into Fail2Ban configuration and service has to be restarted
+      * ![Update Metadata](./../img/instance_metadata_public_ipv4.png)
 
 [bio-portal]: http://bio-portal.metacentrum.cz
 [cloud]: https://cloud.muni.cz
