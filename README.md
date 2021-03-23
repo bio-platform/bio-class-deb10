@@ -324,7 +324,7 @@ In case of too many failed attempts (anyone from your subnet behind public IP ad
 ![Update Metadata](./doc/img/instance_metadata_public_ipv4.png)
 
 If more Bans during 24 hours, then whole access should be blocked for 24 hours!
-If more failing SSH attempts during 7*24 hours, then whole access should be blocked for 7*24 hours!
+If more failing SSH attempts during `7*24` hours, then whole access should be blocked for `7*24` hours!
 
 #### Tmux
 *  You may open Tmux session using `tmux` or attach to the existing Tmux session by `tmux attach`. Tmux can prevent updates break if your local computer for example loose connection. Another example is executing bash commands with long run time
