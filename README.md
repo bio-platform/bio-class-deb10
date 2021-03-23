@@ -318,6 +318,7 @@ In case of too many failed attempts (anyone from your subnet behind public IP ad
 * In Metada dialog insert new variable *Bioclass_ipv4* containing your public IPv4 address (see for example at [What Is My Public IP Address?](https://www.whatismyip.com)) or edit existing variable to a new value
   * Multiple addresses may be inserted with comma as delimiter e.g. `101.101.101.101,102.102.102.102/32,103.103.103.0/24`
   * To remove variable with addresses use button *-* on the right
+  * Check variable Bioclass_ipv4 in [Project](https://cloud.muni.cz/) -> Compute -> Instances -> click on Instance name -> tab Overview -> section Metadata
 * Proceed with **Save** button
 * Wait for approximately 10 minutes until your IP address is inserted into Fail2Ban configuration and service has to be restarted
 ![Update Metadata](./doc/img/instance_metadata_public_ipv4.png)

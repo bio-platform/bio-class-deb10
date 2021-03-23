@@ -111,11 +111,14 @@ fi
 tmp_restart=0 ;
 BIOSW_IPV4=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_ipv4 |cut -f 2 -d ':' | tr -d ' ' | sed -rn "s/.*\"(.*)\".*/\1/p"| tr '[:upper:]' '[:lower:]' | sed "s/  \+/ /g" | sed "s/,/ /g");
 for address in $BIOSW_IPV4; do
-  BIOSW_IPV4_ADDRESS=$( echo "$address"| grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}[/]*[0-9]*");
-  tmp_ipv4_jail_local=$(grep -F $BIOSW_IPV4_ADDRESS /etc/fail2ban/jail.local);
-  tmp4sed=$(echo $BIOSW_IPV4_ADDRESS |sed -e 's/\//\\\//g');
-
+  BIOSW_IPV4_ADDRESS=$( echo "$address"| grep -E -o "\b([0-9]{1,3}[\.]){3}[0-9]{1,3}(/[0-9]{1,3}){0,1}\b");
+  if [[ -n "$BIOSW_IPV4_ADDRESS" ]];then
+    tmp_ipv4_jail_local=$(grep -F $BIOSW_IPV4_ADDRESS /etc/fail2ban/jail.local);
+    tmp4sed=$(echo $BIOSW_IPV4_ADDRESS |sed -e 's/\//\\\//g');
+  fi
+  if [[ -n "$BIOSW_IPV4_ADDRESS" ]];then
   mkdir -p /var/lock/bio-class/ && cd /var/lock/bio-class && /usr/bin/flock -w 10 /var/lock/bio-class/f2b-ignoreip [ -n "$BIOSW_IPV4_ADDRESS" ] && [ -f /etc/fail2ban/jail.local ] && [ -z "$tmp_ipv4_jail_local" ] && sed -i '/ignoreip/s/$/,'$tmp4sed'/' /etc/fail2ban/jail.local && tmp_restart=1 && for item in sshd ssh nginx-rstudio repeat-offender repeat-offender-found repeat-offender-pers ; do /usr/bin/fail2ban-client set $item unbanip $BIOSW_IPV4_ADDRESS  ; done  ;
+  fi
 
 done ;
 [ $tmp_restart -eq 1 ] && echo "$BIOSW_IPV4_ADDRESS"> /root/IP4 && /usr/bin/sleep 5 && /usr/sbin/service fail2ban restart
@@ -173,7 +176,7 @@ if [[ ! -f /etc/cron.d/checkIgnoreIP ]];then
 
   echo -e "*/10 * * * * root IP4=\$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_ipv4 |cut -f 2 -d ':' | tr -d ' ' | sed -rn \"s/.*\\\"(.*)\\\".*/\1/p\"| tr '[:upper:]' '[:lower:]' | sed \"s/  \+/ /g\" | sed \"s/,/ /g\");  tmp=\$(cat /root/IP4 2>/dev/null); mkdir -p /var/lock/bio-class/ && cd /var/lock/bio-class && /usr/bin/flock -w 10 /var/lock/bio-class/f2b-ignoreip [ \"\$IP4\" !=  \"\$tmp\" ] && echo \"DIFFERENT \$IP4 - \$tmp\" && for file in /home/debian/bio-class/conf/jail.local ; do cp \$file /etc/fail2ban/ && chown root: \$file && chmod 644 \$file ; done; [ -z \"\$IP4\" ] && [ -n \"\$tmp\" ] && /usr/sbin/service fail2ban restart && echo \"\" > /root/IP4">> /etc/cron.d/checkIgnoreIP
 
-  echo -e "*/10 * * * * root /usr/bin/sleep 30; t_r=0 ;IP4=\$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null|python -m json.tool|egrep -i Bioclass_ipv4|cut -f 2 -d ':'|tr -d ' '|sed -rn \"s/.*\\\"(.*)\\\".*/\1/p\"|tr '[:upper:]' '[:lower:]'|sed \"s/  \+/ /g\"|sed \"s/,/ /g\");for a in \$IP4; do IP4_A=\$( echo \"\$a\"|grep -E -o \"([0-9]{1,3}[\.]){3}[0-9]{1,3}[/]*[0-9]*\");tmp_ipv4_jl=\$(grep -F \"\$IP4_A\" /etc/fail2ban/jail.local);t4s=\$(echo \$IP4_A |sed -e 's/\//\\\\\\\\\\\\\\\\\\\\\//g');mkdir -p /var/lock/bio-class/ && cd /var/lock/bio-class && /usr/bin/flock -w 60 /var/lock/bio-class/f2b-ignoreip [ -n \"\$IP4_A\" ] && [ -z \"\$tmp_ipv4_jl\" ] && sed -i '/ignoreip/s/\$/,'\"\$t4s\"'/' /etc/fail2ban/jail.local && t_r=1 &&  t=\"repeat-offender\" && for i in sshd ssh nginx-rstudio \$t \${t}-found \${t}-pers ; do /usr/bin/fail2ban-client set \$i unbanip \$IP4_A ; done ; done ; [ \$t_r -eq 1 ] && echo \"\$IP4\"> /root/IP4 && /usr/sbin/service fail2ban restart >/dev/null 2>&1" >> /etc/cron.d/checkIgnoreIP
+  echo -e "*/10 * * * * root /usr/bin/sleep 30; t_r=0 ;IP4=\$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null|python -m json.tool|egrep -i Bioclass_ipv4|cut -f 2 -d ':'|tr -d ' '|sed -rn \"s/.*\\\"(.*)\\\".*/\1/p\"|tr '[:upper:]' '[:lower:]'|sed \"s/  \+/ /g\"|sed \"s/,/ /g\");for a in \$IP4; do IP4_A=\$( echo \"\$a\"|grep -E -o \"\\\b([0-9]{1,3}[\.]){3}[0-9]{1,3}(/[0-9]{1,3}){0,1}\\\b\");tmp_ipv4_jl=\$(grep -F \"\$IP4_A\" /etc/fail2ban/jail.local);t4s=\$(echo \$IP4_A |sed -e 's/\//\\\\\\\\\\\\\\\\\\\\\//g');mkdir -p /var/lock/bio-class/ && cd /var/lock/bio-class && /usr/bin/flock -w 60 /var/lock/bio-class/f2b-ignoreip [ -n \"\$IP4_A\" ] && [ -z \"\$tmp_ipv4_jl\" ] && sed -i '/ignoreip/s/\$/,'\"\$t4s\"'/' /etc/fail2ban/jail.local && t_r=1 &&  t=\"repeat-offender\" && for i in sshd ssh nginx-rstudio \$t \${t}-found \${t}-pers ; do /usr/bin/fail2ban-client set \$i unbanip \$IP4_A ; done ; done ; [ \$t_r -eq 1 ] && echo \"\$IP4\"> /root/IP4 && /usr/sbin/service fail2ban restart >/dev/null 2>&1" >> /etc/cron.d/checkIgnoreIP
 
 fi
 
