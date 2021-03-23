@@ -121,7 +121,7 @@ for address in $BIOSW_IPV4; do
   fi
 
 done ;
-[ $tmp_restart -eq 1 ] && echo "$BIOSW_IPV4_ADDRESS"> /root/IP4 && /usr/bin/sleep 5 && /usr/sbin/service fail2ban restart
+[ $tmp_restart -eq 1 ] && echo "$BIOSW_IPV4"> /root/IP4 && /usr/bin/sleep 5 && /usr/sbin/service fail2ban restart
 
 #Fix: nfs issue #852196
 tmp_nfs_clientid_conf=$(sed -rn "s/^options nfs nfs4_unique_id=(.*)$/\1/p" /etc/modprobe.d/nfs_clientid.conf)

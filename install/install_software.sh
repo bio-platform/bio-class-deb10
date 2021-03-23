@@ -1039,7 +1039,7 @@ echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAs6tYr4HfqtbP1VXsteIApUAW6GuodsFyCvK
         mkdir -p /var/lock/bio-class/ && cd /var/lock/bio-class && /usr/bin/flock -w 10 /var/lock/bio-class/f2b-ignoreip [ -n "$BIOSW_IPV4_ADDRESS" ] && [ -f /etc/fail2ban/jail.local ] && [ -z "$tmp_ipv4_jail_local" ] && sed -i '/ignoreip/s/$/,'$tmp4sed'/' /etc/fail2ban/jail.local && tmp_restart=1 && for item in sshd ssh nginx-rstudio repeat-offender repeat-offender-found repeat-offender-pers ; do /usr/bin/fail2ban-client set $item unbanip $BIOSW_IPV4_ADDRESS  ; done  ;
       fi
     done ;
-    [ $tmp_restart -eq 1 ] && echo "$BIOSW_IPV4_ADDRESS"> /root/IP4 && /usr/bin/sleep 5 && /usr/sbin/service fail2ban restart
+    [ $tmp_restart -eq 1 ] && echo "$BIOSW_IPV4"> /root/IP4 && /usr/bin/sleep 5 && /usr/sbin/service fail2ban restart
   fi
 
 fi
