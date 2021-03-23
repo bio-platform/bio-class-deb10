@@ -85,7 +85,7 @@ COMMIT" > /root/iptables-rules.v4
 
   echo -E "/var/log/fail2ban.log {
 
-    monthly
+    weekly
     rotate 6
     compress
 

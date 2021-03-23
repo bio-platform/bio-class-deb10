@@ -785,7 +785,7 @@ COMMIT" > /root/iptables-rules.v4
   iptables -L -n --line-numbers
 
   echo -E "/var/log/fail2ban.log {
-    monthly
+    weekly
     rotate 6
     compress
     delaycompress
