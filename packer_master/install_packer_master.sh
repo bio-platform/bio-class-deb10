@@ -95,9 +95,11 @@ pip install python-openstackclient
 openstack --version
 
 # Download Packer
-wget  --no-verbose https://releases.hashicorp.com/packer/1.4.2/packer_1.4.2_linux_amd64.zip  -P /tmp/
+#wget  --no-verbose https://releases.hashicorp.com/packer/1.4.2/packer_1.4.2_linux_amd64.zip  -P /tmp/
+wget  --no-verbose https://releases.hashicorp.com/packer/1.7.0/packer_1.7.0_linux_amd64.zip -P /tmp/
 cd /tmp/
-unzip -q /tmp/packer_1.4.2_linux_amd64.zip -d /usr/local/bin
+#unzip -q /tmp/packer_1.4.2_linux_amd64.zip -d /usr/local/bin
+unzip -q /tmp/packer_1.7.0_linux_amd64.zip -d /usr/local/bin
 packer version
 
 
