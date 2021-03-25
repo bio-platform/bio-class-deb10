@@ -10,7 +10,7 @@
   "ssh_username": "debian",
   "image_name": "debian-10-x86_64_bioconductor_packer_master",
   "source_image": "bbe44bf3-b504-4a63-94f0-e51a69d9b7ba",
-  "flavor": "bbca574d-b0ea-4738-be73-a0ae0ac67a6d"
+  "flavor": "6c329868-8337-4084-9971-6f58f8208221"
 }],
 "provisioners": [
         {
