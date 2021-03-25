@@ -4,6 +4,7 @@
   "communicator": "ssh",
   "ssh_keypair_name": "packer-key",
   "ssh_timeout": "10m",
+  "ssh_handshake_attempts": "160",
   "ssh_private_key_file": "~/.ssh/packer_id_rsa",
   "floating_ip": "a295c4e1-147a-4553-a2e4-35fdacb7152c",
   "networks": "f9768752-b0bd-4812-9af7-8622f9ac29e3",
