@@ -92,6 +92,8 @@ set_sshd_config
 apt-get -y install python-pip
 pip --version
 pip install python-openstackclient
+sed -i "s/^import queue$/from multiprocessing import Queue as queue/g" /usr/local/lib/python2.7/dist-packages/openstack/cloud/openstackcloud.py
+sed -i "s/^import queue$/from multiprocessing import Queue as queue/g" /usr/local/lib/python2.7/dist-packages/openstack/utils.py
 openstack --version
 
 # Download Packer
