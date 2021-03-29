@@ -13,24 +13,28 @@ LIB_DIR="$dirname"/../lib
 # Uncomment here when finished development
 #chown root: /home/debian/.ssh/authorized_keys
 
+# Insert packer public key if needed access during install process
+echo -e "...INSERT PUBLIC KEY FOR DEPLOY KEY HERE..." > /home/debian/.ssh/authorized_keys
+cd ~ ; chmod 700 .ssh/ ; chmod 644 .ssh/authorized_keys
+
 # True to use deploy key or any other to download public repo
 PRIVATE_REPO=""
 
 # Disable login using password
-sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config ;
-/etc/init.d/ssh reload
+#sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config ;
+#/etc/init.d/ssh reload
 
 # Set SSH Warning Message to Users
 tmp_issuenet=$(sudo cat /etc/issue.net)
-sudo sh -c "echo '####################################################################
+#sudo sh -c "echo '####################################################################
 #                                                                  #
 # Instance is during process of software instalation, please wait! #
 #                                                                  #
 # Login will be enabled after finished configuration.              #
 #                                                                  #
 ####################################################################' > /etc/issue.net"
-sudo sed -i 's/#Banner none$/Banner \/etc\/issue.net/g' /etc/ssh/sshd_config
-sudo systemctl restart sshd
+#sudo sed -i 's/#Banner none$/Banner \/etc\/issue.net/g' /etc/ssh/sshd_config
+#sudo systemctl restart sshd
 
 
 #Script to download repo with bio-class Software
