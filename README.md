@@ -80,7 +80,7 @@ There are only two steps to proceed with after instance launch using prepared im
     * After login follow the link "klikněte zde pro provedení Vaší žádosti/click here to resume your request"
     * Write down your issue and confirm using button "Vytvořit/Create"
   * #### In your support request please include detailed procedure of your issue with:
-    * Login attempt with degug information `ssh -vvv -A -Y -X -i ~/.ssh/id_rsa <login>@<Floating IP>`
+    * Login attempt with debug information `ssh -vvv -A -Y -X -i ~/.ssh/id_rsa <login>@<Floating IP>`
     * Existing instances list - [Open Project](https://cloud.muni.cz/) -> Compute -> Instances as printscreen
     * Instance log - [Open Project](https://cloud.muni.cz/) -> Compute -> Instances -> click on instance Name -> submenu *Log* -> button *View Full Log* and attach it as plain text document
     * Instance Overview - [Open Project](https://cloud.muni.cz/) -> Compute -> Instances -> click on instance Name -> submenu Overview -> sections *Specs*, *IP Addresses*, *Security Groups*, *Metadata* or printscreen of this tab

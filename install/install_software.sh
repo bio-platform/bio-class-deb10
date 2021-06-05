@@ -161,8 +161,16 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
   # Secure APT - fetch and import the current key
   apt-key adv --keyserver keys.gnupg.net --recv-key 'E19F5F87128899B192B1A2C2AD5F960A256A04AF'
   #echo "deb file:$LOCAL_RSTUDIO_REPO/ ./" > /etc/apt/sources.list.d/rstudio.list
-  wget -P "$LOCAL_RSTUDIO_REPO" --no-verbose https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.4.1103-amd64.deb
+
+  #prev 1.4.1103 new 1.4.1717
+  SW_NAME="rstudio-server";SW_VERSION="1.4.1103";cd  "$TMP_DIR";
+  [ ! -f "${TMP_DIR}/rstudio-server-"* ] && wget -P "$LOCAL_RSTUDIO_REPO" --no-verbose https://download2.rstudio.org/server/bionic/amd64/${SW_NAME}-${SW_VERSION}-amd64.deb
+  [ ! -f "${TMP_DIR}/rstudio-server-"* ] && TMP_RSPATH=$(find "$LOCAL_RSTUDIO_REPO" -maxdepth 1 -name "${SW_NAME}*" -type f ); TMP_RSFILE=$(basename "$TMP_RSPATH")
+  [ -f "${TMP_DIR}/rstudio-server-"* ] && TMP_RSPATH=$(find "$TMP_DIR" -maxdepth 1 -name "${SW_NAME}*" -type f ); TMP_RSFILE=$(basename "$TMP_RSPATH")
+  [ -f "${TMP_DIR}/rstudio-server-"* ] && cp "${TMP_DIR}/${TMP_RSFILE}" "$LOCAL_RSTUDIO_REPO"
+  #wget -P "$LOCAL_RSTUDIO_REPO" --no-verbose https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.4.1103-amd64.deb
   #wget -P "$LOCAL_RSTUDIO_REPO" --no-verbose https://download1.rstudio.org/desktop/debian9/x86_64/rstudio-1.2.1335-amd64.deb
+
   # Create local repo for apt-get install, not use gdebi during VM init
   cd "$LOCAL_RSTUDIO_REPO"
   sudo dpkg-scanpackages . | gzip > ./Packages.gz
@@ -176,7 +184,12 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
   #sudo apt-get -y --allow-unauthenticated install rstudio rstudio-server  ; update_sources ;
   cd "$LOCAL_RSTUDIO_REPO"
   sudo apt-get -y install gdebi-core
-  sudo gdebi -n rstudio-server-1.4.1103-amd64.deb
+  #sudo gdebi -n rstudio-server-1.4.1103-amd64.deb
+  if [[ -n "$TMP_RSFILE" ]];then
+    sudo gdebi -n "$TMP_RSFILE"
+  else
+    echo "------------------------ EMPTY RSTUDIO SERVER FILE NAME ------------------------"
+  fi
 
   cd "$SCRIPTDIR"
   update_sources ;
