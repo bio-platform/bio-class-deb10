@@ -180,6 +180,21 @@ if [[ ! -f /etc/cron.d/checkIgnoreIP ]];then
 
 fi
 
+#KEGG.db removed with Bioconductor 3.13 release
+tmp_keggdb=$(Rscript -e "installed.packages()" | egrep "^KEGG.db" | egrep "site-library")
+if [[ -z "$tmp_keggdb" ]];then
+  echo "Install KEGG.db from tar"
+  TMP_DIR="/tmp/${name}-tmp" ;
+  mkdir -p "${TMP_DIR}";
+  cd ${TMP_DIR}
+  [ ! -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && wget --no-verbose https://bioconductor.org/packages/3.11/data/annotation/src/contrib/KEGG.db_3.2.4.tar.gz -P "$TMP_DIR"
+  [ -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && tar -zxf KEGG.db_3.2.4.tar.gz -C "${TMP_DIR}"
+  [ -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && Rscript -e "install.packages(\"KEGG.db_3.2.4.tar.gz\", repos = NULL, type=\"source\")"
+  Rscript -e "installed.packages()" | egrep "^KEGG.db" | egrep "site-library"
+
+fi
+
+
 # Patch
 echo "Install patch has finished"
 
