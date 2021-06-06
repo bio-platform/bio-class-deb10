@@ -163,7 +163,7 @@ if ([[ -n "$BIOSW_RSTUDIO" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "base"
   #echo "deb file:$LOCAL_RSTUDIO_REPO/ ./" > /etc/apt/sources.list.d/rstudio.list
 
   #prev 1.4.1103 new 1.4.1717
-  SW_NAME="rstudio-server";SW_VERSION="1.4.1103";cd  "$TMP_DIR";
+  SW_NAME="rstudio-server";SW_VERSION="1.4.1717";cd  "$TMP_DIR";
   [ ! -f "${TMP_DIR}/rstudio-server-"* ] && wget -P "$LOCAL_RSTUDIO_REPO" --no-verbose https://download2.rstudio.org/server/bionic/amd64/${SW_NAME}-${SW_VERSION}-amd64.deb
   [ ! -f "${TMP_DIR}/rstudio-server-"* ] && TMP_RSPATH=$(find "$LOCAL_RSTUDIO_REPO" -maxdepth 1 -name "${SW_NAME}*" -type f ); TMP_RSFILE=$(basename "$TMP_RSPATH")
   [ -f "${TMP_DIR}/rstudio-server-"* ] && TMP_RSPATH=$(find "$TMP_DIR" -maxdepth 1 -name "${SW_NAME}*" -type f ); TMP_RSFILE=$(basename "$TMP_RSPATH")
