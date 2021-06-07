@@ -187,7 +187,7 @@ if [[ -z "$tmp_keggdb" ]];then
   TMP_DIR="/tmp/${name}-tmp" ;
   mkdir -p "${TMP_DIR}";
   cd ${TMP_DIR}
-  [ ! -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && wget --no-verbose https://bioconductor.org/packages/3.11/data/annotation/src/contrib/KEGG.db_3.2.4.tar.gz -P "$TMP_DIR"
+  [ ! -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && wget --no-verbose https://bioconductor.org/packages/3.12/data/annotation/src/contrib/KEGG.db_3.2.4.tar.gz -P "$TMP_DIR"
   [ -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && tar -zxf KEGG.db_3.2.4.tar.gz -C "${TMP_DIR}"
   [ -f "${TMP_DIR}/KEGG.db_3.2.4.tar.gz" ] && Rscript -e "install.packages(\"KEGG.db_3.2.4.tar.gz\", repos = NULL, type=\"source\")"
   Rscript -e "installed.packages()" | egrep "^KEGG.db" | egrep "site-library"
