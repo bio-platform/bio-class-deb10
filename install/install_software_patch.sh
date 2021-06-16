@@ -181,7 +181,10 @@ if [[ ! -f /etc/cron.d/checkIgnoreIP ]];then
 fi
 
 #KEGG.db removed with Bioconductor 3.13 release
-tmp_keggdb=$(Rscript -e "installed.packages()" | egrep "^KEGG.db" | egrep "site-library")
+tmp_keggdb=$(find /usr/local/lib/R/site-library/KEGG.db/R/ -maxdepth 1 -type f -name KEGG.db)
+if [[ -z "$tmp_keggdb" ]];then
+  tmp_keggdb=$(Rscript -e "installed.packages()" | egrep "^KEGG.db" | egrep "site-library")
+fi
 if [[ -z "$tmp_keggdb" ]];then
   echo "Install KEGG.db from tar"
   TMP_DIR="/tmp/${name}-tmp" ;
