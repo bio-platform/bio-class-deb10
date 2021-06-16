@@ -260,6 +260,7 @@ backup_certificate() {
     if [[ $? -ne 0 ]];then
       DEBUG "TMPFILE: $TMPFILE"
       ERROR "Unable to create temporary file on NFS during backup of previous certificate archive"
+      ERROR "Try to perform stopNFS followed with startNFS or try sudo reboot if without success"
       exit 1
     fi
     rm $TMPFILE
@@ -500,6 +501,24 @@ elif  [[ "$MODE" == "https" ]] || [[ "$MODE" == "restore" ]];then
       DEBUG "Command tar output: $command_output"
       if [[ "$command_status" -eq 0 ]];then
         OK "Restore completed"
+        # RT#914215
+        checkstate
+        if [[ -n "$chain_exists" ]] || [[ -n "$key_exists" ]] || [[ -n "$cert_path" ]] || [[ -n "$key_path" ]];then
+          DEBUG "Perform certificate renew after backup from NFS"
+          command_output=$(sudo certbot renew)
+          command_status="$?"
+          tmp_not_expired=$(echo "$command_output" | egrep "(Cert not yet due for renewal)|(No renewals were attempted)")
+          if [[ -n "$tmp_not_expired" ]];then
+            INFO "Certificate not yet due for renewal"
+          elif [[ "$command_status" -eq 0 ]];then
+            checkstate
+            if [[ -n "$chain_exists" ]] || [[ -n "$key_exists" ]] || [[ -n "$cert_path" ]] || [[ -n "$key_path" ]];then
+              INFO "Perform backup after succesffull certificate restore from NFS"
+              backup_certificate
+            fi
+          fi
+        fi
+
       else
         ERROR "Unable to restore backup file"
       fi
