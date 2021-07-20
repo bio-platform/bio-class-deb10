@@ -11,6 +11,9 @@ export PATH
 CONF_DIR="$dirname"/../conf
 LIB_DIR="$dirname"/../lib
 
+# Include global Conf
+. $CONF_DIR/.conf
+
 BIOUSER=$(curl -s  http://169.254.169.254/openstack/2016-06-30/meta_data.json 2>/dev/null | python -m json.tool | egrep -i Bioclass_user |cut -f 2 -d ':' | tr -d ' ' | sed -rn "s/.*\"(.*)\".*/\1/p"| tr '[:upper:]' '[:lower:]')
 if [[ -z "$BIOUSER" ]]; then
   echo "Empty Bioclass_user from METADATA, exiting!"
