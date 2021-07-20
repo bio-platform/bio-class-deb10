@@ -832,7 +832,7 @@ fi
 
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
   # Cron for backup
-  echo -e "* 1,13 * * * ${BIOUSER} public_ipv4=\$(curl -s http://169.254.169.254/2009-04-04/meta-data/public-ipv4 2>/dev/null | grep -E -o \"([0-9]{1,3}[\.]){3}[0-9]{1,3}\");nginxconf=\$(grep cert.pem /etc/nginx/nginx.conf) ;[ -n \"\$public_ipv4\" ] && [ -n \"\$nginxconf\" ] && [ -d "${NFS_HOME_PERSISTENT}/${BIOUSER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" ] && cd /home/${BIOUSER}/HTTPS/ && /usr/bin/flock -w 10 /var/lock/bio-class/startHTTPS ./startHTTPS.sh -m backup >/dev/null 2>&1" > /etc/cron.d/backupHTTPS
+  echo -e "0 */1 * * * ${BIOUSER} public_ipv4=\$(curl -s http://169.254.169.254/2009-04-04/meta-data/public-ipv4 2>/dev/null | grep -E -o \"([0-9]{1,3}[\.]){3}[0-9]{1,3}\");nginxconf=\$(grep cert.pem /etc/nginx/nginx.conf) ;[ -n \"\$public_ipv4\" ] && [ -n \"\$nginxconf\" ] && [ -d "${NFS_HOME_PERSISTENT}/${BIOUSER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" ] && cd /home/${BIOUSER}/HTTPS/ && /usr/bin/flock -w 10 /var/lock/bio-class/startHTTPS ./startHTTPS.sh -m backup >/dev/null 2>&1" > /etc/cron.d/backupHTTPS
 
   # Updates
   if [[ ! -f /etc/cron.d/updates ]];then

@@ -250,36 +250,19 @@ backup_certificate() {
   remote_backup_exists=$(find  "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" -maxdepth 1 -type f -path "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz")
   DEBUG "remote_backup_exists: $remote_backup_exists"
   if [[ -n "$remote_backup_exists" ]];then
-    DEBUG "Backup previous archive to ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
-    md5sum_remote=$(sudo md5sum ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz | cut -f 1 -d ' ')
-    DEBUG "md5sum_remote: $md5sum_remote"
-    tmp_dir=$(pwd)
-    DEBUG "dir: $tmp_dir"
-    cd "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
-    TMPFILE=`timeout 60 mktemp .placeholder-XXXXXX`
-    if [[ $? -ne 0 ]];then
-      DEBUG "TMPFILE: $TMPFILE"
-      ERROR "Unable to create temporary file on NFS during backup of previous certificate archive"
-      ERROR "Try to perform stopNFS followed with startNFS or try sudo reboot if without success"
-      exit 1
-    fi
-    rm $TMPFILE
-    if [[ $? -ne 0 ]];then
-      ERROR "Temporary file created, but NOT deleted"
-      exit 1
-    fi
-    cd $tmp_dir
-    DEBUG "dir: $tmp_dir"
-    sudo mv -f "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz" "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
+    #md5sum_remote=$(sudo md5sum ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz | cut -f 1 -d ' ')
+    timestamp_remote=$(sudo tar -tvf ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz | egrep -v "etc/letsencrypt/$")
+    #DEBUG "timestamp_remote: $timestamp_remote"
   fi
+
   cd /tmp/
   command_output=$(sudo GZIP=-n tar -czvf certBackup-${public_ipv4_2text}.tar.gz /etc/letsencrypt/ 2>&1)
   command_status="$?"
   DEBUG "Command tar output: $command_output"
-  md5sum_local=$(sudo md5sum /tmp/certBackup-${public_ipv4_2text}.tar.gz | cut -f 1 -d ' ')
-  DEBUG "md5sum_local: $md5sum_local"
-  DEBUG "md5sum_remote: $md5sum_remote"
-  if [[ "$md5sum_local" != "$md5sum_remote"  ]];then
+  #md5sum_local=$(sudo md5sum /tmp/certBackup-${public_ipv4_2text}.tar.gz | cut -f 1 -d ' ')
+  timestamp_local=$(sudo tar -tvf /tmp/certBackup-${public_ipv4_2text}.tar.gz | egrep -v "etc/letsencrypt/$")
+  #DEBUG "timestamp_local: $timestamp_local"
+  if [[ "$timestamp_local" != "$timestamp_remote" ]] ;then
     tmp_dir=$(pwd)
     DEBUG "dir: $tmp_dir"
     cd "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
@@ -298,6 +281,14 @@ backup_certificate() {
     fi
     cd $tmp_dir
     DEBUG "dir: $tmp_dir"
+
+    DEBUG "Backup previous archive to ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
+    sudo cp -f -p "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz" "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz.OLD"
+
+    if [[ -f "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz" ]];then
+      DEBUG "Remove previous backup on NFS if exists before copying new one"
+      sudo rm -f "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz"
+    fi
     cd /tmp/
     INFO "Copy backup to NFS"
     # set permissions on tmp cert backup
@@ -305,22 +296,24 @@ backup_certificate() {
     #cp /tmp/certBackup-${public_ipv4_2text}.tar.gz "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
     sudo rsync -av --no-perms --no-owner --no-group --omit-dir-times --delete --progress /tmp/certBackup-${public_ipv4_2text}.tar.gz "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}"
     sudo chmod 600 ${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz
+
+    DEBUG "Set permissions on all existing backups"
+    for file in `find "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" -name certBackup\*`; do command_output=$(sudo chmod 600 $file); DEBUG "chmod $file" ; done
+    DEBUG "Check after backup"
+    remote_backup_exist_after_copy=$(find  "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" -maxdepth 1 -type f -path "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz")
+    DEBUG "remote_backup_exist_after_copy: $remote_backup_exist_after_copy"
+    if [[ -n  "$remote_backup_exist_after_copy" ]];then
+      OK "Backup completed: $remote_backup_exist_after_copy"
+    else
+      ERROR "Unable to find backup file: $remote_backup_exist_after_copy"
+    fi
+
   else
-    INFO "Do not copy backup, local and NFS backups are the same md5sum"
+    INFO "Do not copy backup, local and NFS backups are the same"
   fi
   sudo rm /tmp/certBackup-${public_ipv4_2text}.tar.gz
   cd "$SCRIPTDIR"
 
-  DEBUG "Set permissions on all existing backups"
-  for file in `find "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" -name certBackup\*`; do command_output=$(sudo chmod 600 $file); DEBUG "chmod $file" ; done
-  DEBUG "Check after backup"
-  remote_backup_exist_after_copy=$(find  "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}" -maxdepth 1 -type f -path "${NFS_HOME_PERSISTENT}/${USER}/${NFS_STORAGE_BACKUP_OS_VER_DIR}/${NFS_STORAGE_BACKUP_HTTPS_DIR}/certBackup-${public_ipv4_2text}.tar.gz")
-  DEBUG "remote_backup_exist_after_copy: $remote_backup_exist_after_copy"
-  if [[ -n  "$remote_backup_exist_after_copy" ]];then
-    OK "Backup completed: $remote_backup_exist_after_copy"
-  else
-    ERROR "Unable to find backup file: $remote_backup_exist_after_copy"
-  fi
 }
 
 set_rserverconf() {
