@@ -2,7 +2,7 @@
 
 Using prepared image is a preferred way, but for testing purposes you may try to initialize VM in personal project.
 
-* Follow the instructions [Quick Start](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/)
+* Follow the instructions [Quick Start](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/quick-start/)
 * Obtain Floating IP, update Security Group and so on
 * Launch instance
     * Insert name of your instance

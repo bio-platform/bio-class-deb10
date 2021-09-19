@@ -9,7 +9,7 @@ Repository for building virtual classroom for biology students using [OpenStack]
 Use prepared image debian-10-x86_64_bioconductor containing all required software is a preferred way. Some of steps below are covered by [fronted application](http://bio-portal.metacentrum.cz) with guide available [here](doc/user/frontend.md). In case of manual action, please [proceed with all required steps individually](./doc/user/launch-in-personal-project.md).
 
 ### SSH Access
-Connect to the instance using your [login](https://cloud.gitlab-pages.ics.muni.cz/documentation/register/), [id_rsa key registered in Openstack](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/#create-key-pair) or see [Key pair check](./doc/user/launch-in-personal-project.md#key-pair) and [Floating IP in Openstack](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/#associate-floating-ip) or see [Floating IP check](./doc/user/launch-in-personal-project.md#floating-ip):
+Connect to the instance using your [login](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/register/), [id_rsa key registered in Openstack](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/quick-start/#create-key-pair) or see [Key pair check](./doc/user/launch-in-personal-project.md#key-pair) and [Floating IP in Openstack](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/quick-start/#associate-floating-ip) or see [Floating IP check](./doc/user/launch-in-personal-project.md#floating-ip):
 
 * Remove instance host key if previous instance launch using associated *Floating IP*:
 ```
@@ -75,8 +75,8 @@ There are only two steps to proceed with after instance launch using prepared im
 * For security reasons failed login attempt limits are realized, so after exceeding this limit your IP address may be blocked for some time. See more below in section [Fail2ban](#fail2ban). To prevent ban you can insert your public IPv4 addresses (Office/Home/VPN etc) into [Metadata](#unban-your-public-ip).
 
 * Support
-  * Send email to [cloud@metacentrum.cz](mailto:cloud@metacentrum.cz?subject=Bioconductor), do not forget to mention Bioconductor in Subject field
-  * Use Request tracker to [create new ticket](https://rt.cesnet.cz/rt/Ticket/Create.html?Queue=27&Subject=Bioconductor&Content=Issue%20with%20Bioconductor)
+  * Send email to [meta@cesnet.cz](mailto:meta@cesnet.cz?subject=Bioconductor), do not forget to mention Bioconductor in Subject field
+  * Use Request tracker to [create new ticket](https://rt.cesnet.cz/rt/Ticket/Create.html?Queue=7&Subject=Bioconductor&Content=Issue%20with%20Bioconductor)
     * After login follow the link "klikněte zde pro provedení Vaší žádosti/click here to resume your request"
     * Write down your issue and confirm using button "Vytvořit/Create"
   * #### In your support request please include detailed procedure of your issue with:
@@ -230,7 +230,7 @@ stopConda
 ```
 
 #### Security Groups
-In [Security Group add rules](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/#update-security-group) add rules ([guide here](./doc/user/launch-in-personal-project.md#manage-security-group-rules)):
+In [Security Group add rules](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/quick-start/#update-security-group) add rules ([guide here](./doc/user/launch-in-personal-project.md#manage-security-group-rules)):
 * For SSH to `<your computer private IPv4 address>/32` or allow it from anywhere `0.0.0.0/0`
 * HTTP and HTTPS to allow Ingress availability from anywhere `0.0.0.0/0` (required for generate certificate using response on port 80)
 ```

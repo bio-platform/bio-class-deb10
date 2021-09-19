@@ -8,7 +8,7 @@ Image producer should [set image status to shared](#share-an-image), otherwise n
 
 ### Install Openstack CLI and Packer
 
-[OpenSstack CLI](https://cloud.gitlab-pages.ics.muni.cz/documentation/cli/) and [Parser](https://www.packer.io/docs/builders/openstack.html) are required to build an image.
+[OpenSstack CLI](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/cli/) and [Parser](https://www.packer.io/docs/builders/openstack.html) are required to build an image.
 
 ### Packer version
 

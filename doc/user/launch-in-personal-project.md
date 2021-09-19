@@ -2,7 +2,7 @@
 
 Using prepared image is a preferred way. Frontend appliacation is prepared to fully cover instance launch steps automatically on background. Proceed with guide below if manual instance launch needed.
 
-* Follow the instructions [Quick Start](https://cloud.gitlab-pages.ics.muni.cz/documentation/quick-start/)
+* Follow the instructions [Quick Start](https://cloud.gitlab-pages.ics.muni.cz/documentation/cloud/quick-start/)
   * Check Router, obtain Floating IP, update Security Group
     * Check if Router contain External Network *public-cesnet-78-128-250-PERSONAL*
       * *This step is OPTIONAL* and proceed with it only if issues with network. This is not needed if you are a new user because this step is managed automatically.
