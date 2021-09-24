@@ -1085,6 +1085,8 @@ if ([[ -z "$INDEVELOP" ]] && [[ "$MODE" == "all" ]])|| [[ "$MODE" == "base" ]]; 
   rm -rf "${TMP_DIR}";
 fi
 
+# clean all bans
+/usr/bin/fail2ban-client unban --all
 
 # "Finished Custom Script"
 exit 0
