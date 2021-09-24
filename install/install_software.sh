@@ -963,26 +963,29 @@ if ([[ -n "$BIOSW_CONDA" ]] && [[ "$MODE" == "all" ]]) || [[ "$MODE" == "post" ]
 fi
 
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]]; then
-  # Disable login using password
-  sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config ;
-  # Enable only strong ciphers and MACs algorithms
-  sed -i 's/#   Ciphers.*/Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr/g' /etc/ssh/sshd_config ;
-  sed -i '/^Ciphers .*/a MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com' /etc/ssh/sshd_config ;
-  sed -i '/^MACs .*/a HostKeyAlgorithms ssh-rsa,rsa-sha2-512,rsa-sha2-512,rsa-sha2-512' /etc/ssh/sshd_config ;
-  # Other sshd_setting
-  sed -i 's/#SyslogFacility .*/SyslogFacility AUTHPRIV/g' /etc/ssh/sshd_config ;
-  sed -i 's/#PermitRootLogin .*/PermitRootLogin no/g' /etc/ssh/sshd_config ;
-  sed -i 's/AcceptEnv LANG LC_\*/AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES/g' /etc/ssh/sshd_config ;
-  sed -i '/^AcceptEnv LANG .*/a AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT' /etc/ssh/sshd_config ;
-  sed -i '/^AcceptEnv LC_PAPER .*/a AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE' /etc/ssh/sshd_config ;
-  sed -i '/^AcceptEnv LC_IDENTIFICATION .*/a AcceptEnv XMODIFIERS' /etc/ssh/sshd_config ;
-  sed -i '/^AcceptEnv XMODIFIERS/a AcceptEnv GIT_*' /etc/ssh/sshd_config ;
+  tmp_authpassw=$(egrep "^PasswordAuthentication no$" /etc/ssh/sshd_config 2>/dev/null)
+  if [[ -z "$tmp_authpassw" ]];then
+    # Disable login using password
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config ;
+    # Enable only strong ciphers and MACs algorithms
+    sed -i 's/#   Ciphers.*/Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr/g' /etc/ssh/sshd_config ;
+    sed -i '/^Ciphers .*/a MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com' /etc/ssh/sshd_config ;
+    sed -i '/^MACs .*/a HostKeyAlgorithms ssh-rsa,rsa-sha2-512,rsa-sha2-512,rsa-sha2-512' /etc/ssh/sshd_config ;
+    # Other sshd_setting
+    sed -i 's/#SyslogFacility .*/SyslogFacility AUTHPRIV/g' /etc/ssh/sshd_config ;
+    sed -i 's/#PermitRootLogin .*/PermitRootLogin no/g' /etc/ssh/sshd_config ;
+    sed -i 's/AcceptEnv LANG LC_\*/AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES/g' /etc/ssh/sshd_config ;
+    sed -i '/^AcceptEnv LANG .*/a AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT' /etc/ssh/sshd_config ;
+    sed -i '/^AcceptEnv LC_PAPER .*/a AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE' /etc/ssh/sshd_config ;
+    sed -i '/^AcceptEnv LC_IDENTIFICATION .*/a AcceptEnv XMODIFIERS' /etc/ssh/sshd_config ;
+    sed -i '/^AcceptEnv XMODIFIERS/a AcceptEnv GIT_*' /etc/ssh/sshd_config ;
 
-  #  SSH config
-  sed -i 's/#   Ciphers.*/Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr/g' /etc/ssh/ssh_config ;
-  sed -i '/^Ciphers .*/a MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com' /etc/ssh/ssh_config ;
-  sed -i '/^MACs .*/a HostKeyAlgorithms ssh-rsa,rsa-sha2-512,rsa-sha2-512,rsa-sha2-512' /etc/ssh/ssh_config ;
-  sed -i 's/#   ForwardX11Trusted yes/ForwardX11Trusted yes/g' /etc/ssh/ssh_config ;
+    #  SSH config
+    sed -i 's/#   Ciphers.*/Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr/g' /etc/ssh/ssh_config ;
+    sed -i '/^Ciphers .*/a MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com' /etc/ssh/ssh_config ;
+    sed -i '/^MACs .*/a HostKeyAlgorithms ssh-rsa,rsa-sha2-512,rsa-sha2-512,rsa-sha2-512' /etc/ssh/ssh_config ;
+    sed -i 's/#   ForwardX11Trusted yes/ForwardX11Trusted yes/g' /etc/ssh/ssh_config ;
+  fi
 
   # OS update
   update_sources ; DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
@@ -1014,14 +1017,18 @@ fi
 
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
   # Copy ssh from debian account, .vimrc 
-  mkdir -p /home/"$BIOUSER"/.ssh; cd /home/"$BIOUSER"; cp /home/debian/.ssh/authorized_keys .ssh/; chmod 700 .ssh; chmod 600 /home/"$BIOUSER"/.ssh/authorized_keys; chown "$BIOUSER": /home/"$BIOUSER"/.ssh -R
+  mkdir -p /home/"$BIOUSER"/.ssh; cd /home/"$BIOUSER"; cp /home/debian/.ssh/authorized_keys.user .ssh/; chmod 700 .ssh; chmod 600 /home/"$BIOUSER"/.ssh/authorized_keys; chown "$BIOUSER": /home/"$BIOUSER"/.ssh -R
+  #rm -f /home/debian/.ssh/authorized_keys.user
   # Add admins
-echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCtDTSiY3bYdRmPOvezE3aY2wThKcl559JoeCsXHSnHlnzFl1iUJfO6+4Uixc4jptg52Ktu33NQzp0bDrvegxy8XxXZNWK9CrJ6qNjNWm51Eflos2m3ipKsRcLg+r/xQGnP32aUyxUfpMQirH6ou1mQ521FRyWr1EXZ4aB55IAtgJmdS8QU9C2Ht4gBIIMJxTlDsyPiZxq7dNfDE6OxbGyHlhLN+DLcU5cfToAMmPneSRPeGkdMJJndPsoJq46qCrW8iosbXmeGG+SXzNmy523tUjCKnH2LSDL/ieagy23vLeKmObEMnIYIqGusqko3e1zQX6Xsioe0+gaHMEOEQmDdpSIgxE7bMowXn9ykWuigbEsjx9XFLy4yWh07xk2UGdhJFn1vS/yKpZ06EJgllkJahrhZmJDN/BLqlbBLg7JKFQeHyN7xYuq7pB6XDjA1+AmF8XYOq+tcK2e0y/o7J77nBUJbXnXiNu6TQbh17kpjxEHNom+Kkzt/XfuERGPdYCJxxj0dPYhF8jwbActmtJdnTy8vD1dKo3tf0AYilIl1IfAASVFHZAFN2LsbhZtGUwigFZmR1qNu1Jgx6Hwgo2/mW/Y188zy1mmQtX+0Yc608BQYwwliWtMkWmxsCpNSSq8BqNA/N/dGLYAjLM+n9W+3rRfEbDl0bzx2wTfyy0r9ww== admin@1' >> /home/"$BIOUSER"/.ssh/authorized_keys
+  if [[ -f ${CONF_DIR}/authorized_keys ]];then
+    cat ${CONF_DIR}/authorized_keys >> /home/"$BIOUSER"/.ssh/authorized_keys
+  else
+    echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCtDTSiY3bYdRmPOvezE3aY2wThKcl559JoeCsXHSnHlnzFl1iUJfO6+4Uixc4jptg52Ktu33NQzp0bDrvegxy8XxXZNWK9CrJ6qNjNWm51Eflos2m3ipKsRcLg+r/xQGnP32aUyxUfpMQirH6ou1mQ521FRyWr1EXZ4aB55IAtgJmdS8QU9C2Ht4gBIIMJxTlDsyPiZxq7dNfDE6OxbGyHlhLN+DLcU5cfToAMmPneSRPeGkdMJJndPsoJq46qCrW8iosbXmeGG+SXzNmy523tUjCKnH2LSDL/ieagy23vLeKmObEMnIYIqGusqko3e1zQX6Xsioe0+gaHMEOEQmDdpSIgxE7bMowXn9ykWuigbEsjx9XFLy4yWh07xk2UGdhJFn1vS/yKpZ06EJgllkJahrhZmJDN/BLqlbBLg7JKFQeHyN7xYuq7pB6XDjA1+AmF8XYOq+tcK2e0y/o7J77nBUJbXnXiNu6TQbh17kpjxEHNom+Kkzt/XfuERGPdYCJxxj0dPYhF8jwbActmtJdnTy8vD1dKo3tf0AYilIl1IfAASVFHZAFN2LsbhZtGUwigFZmR1qNu1Jgx6Hwgo2/mW/Y188zy1mmQtX+0Yc608BQYwwliWtMkWmxsCpNSSq8BqNA/N/dGLYAjLM+n9W+3rRfEbDl0bzx2wTfyy0r9ww== admin@1' >> /home/"$BIOUSER"/.ssh/authorized_keys
 
-echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7FOomD7bqi4oLzjJaQCrYSr40l0Zw17Cw2GP5a7sUsdhC/c/jPy6WQA7Uf/ynll+1WVMi1Kh8coZANU2dpLZSepqS8/iGHCb4+3EoLepX0E6H7WFycx49W9dhPNFyFZIG5bt/ywIP644eJu3cvI9j2zYHv6iBjuK6I+mAQk6JsvQxO8d8GNQXhEgyMB9CJc/cAhZIoyfoML/VttLS47DSdkJZvNI66oK8TaldUJXdAqtSR/n8Y91DmssBRaHbgqFZV41xAzweaQnXuFuxmUYjYfcqiF9YCmrk7pdlsVxegfgMPVsGUciTZfg7G1EkFvE2cUlBhAqSLkQnLmZQQO43 admin@2' >> /home/"$BIOUSER"/.ssh/authorized_keys
+   echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7FOomD7bqi4oLzjJaQCrYSr40l0Zw17Cw2GP5a7sUsdhC/c/jPy6WQA7Uf/ynll+1WVMi1Kh8coZANU2dpLZSepqS8/iGHCb4+3EoLepX0E6H7WFycx49W9dhPNFyFZIG5bt/ywIP644eJu3cvI9j2zYHv6iBjuK6I+mAQk6JsvQxO8d8GNQXhEgyMB9CJc/cAhZIoyfoML/VttLS47DSdkJZvNI66oK8TaldUJXdAqtSR/n8Y91DmssBRaHbgqFZV41xAzweaQnXuFuxmUYjYfcqiF9YCmrk7pdlsVxegfgMPVsGUciTZfg7G1EkFvE2cUlBhAqSLkQnLmZQQO43 admin@2' >> /home/"$BIOUSER"/.ssh/authorized_keys
 
-echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAs6tYr4HfqtbP1VXsteIApUAW6GuodsFyCvKQH/XQRkmV5J8UC53ky1ivJMSz07dKsr3hi8k6TBLqOPX23XlIHy0cXg5cPp5rmtx7Vvynp/oahw1KIkv1/WlbLzhvbwgeZeYUZZjk2K9I86GmPBdAxQxae2zOIpZWenp/DnV0eZ3TA+C3y1sn8t5ShG/5QCdd316/3P5tGukBuuS9RqxoRLB1rYecsOTghfk0luJfMkERyb0sIGo2Fs4QgGKlRFktAvxm2oJYfxX3VX6bIwuizkeqqo+8+drzweifE1qsxaRQuwUPjIdOBUkEsdP8Wl+nwMBpTPXepx954eJx1CBFMQ== admin@3' >> /home/"$BIOUSER"/.ssh/authorized_keys
-
+   echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAs6tYr4HfqtbP1VXsteIApUAW6GuodsFyCvKQH/XQRkmV5J8UC53ky1ivJMSz07dKsr3hi8k6TBLqOPX23XlIHy0cXg5cPp5rmtx7Vvynp/oahw1KIkv1/WlbLzhvbwgeZeYUZZjk2K9I86GmPBdAxQxae2zOIpZWenp/DnV0eZ3TA+C3y1sn8t5ShG/5QCdd316/3P5tGukBuuS9RqxoRLB1rYecsOTghfk0luJfMkERyb0sIGo2Fs4QgGKlRFktAvxm2oJYfxX3VX6bIwuizkeqqo+8+drzweifE1qsxaRQuwUPjIdOBUkEsdP8Wl+nwMBpTPXepx954eJx1CBFMQ== admin@3' >> /home/"$BIOUSER"/.ssh/authorized_keys
+  fi
 
   for FILE in /home/debian/.vimrc /home/"$BIOUSER"/.vimrc /root/.vimrc ; do echo "color murphy" >> "$FILE" ; echo "set mouse-=a" > ~/.vimrc ; done
   # Set motd Rstudio URL and show "$BIOUSER" password

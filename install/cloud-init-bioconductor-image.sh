@@ -10,9 +10,16 @@ export PATH
 CONF_DIR="$dirname"/../conf
 LIB_DIR="$dirname"/../lib
 
-# Set owner as root for debian ssh key to avoid login. Einfra account from metadata should be used to mount NFS storage.
-# Uncomment here when finished development
+# backup debian account authorized_keys. Einfra account from metadata should be used to mount NFS storage.
 chown root: /home/debian/.ssh/authorized_keys
+cp /home/debian/.ssh/authorized_keys /home/debian/.ssh/authorized_keys.user
+wget -O /home/debian/.ssh/authorized_keys https://raw.githubusercontent.com/bio-platform/bio-class-deb10/main/conf/authorized_keys
+chown debian: /home/debian/.ssh/authorized_keys
+chmod 644 /home/debian/.ssh/authorized_keys
+wget -O /home/debian/common_functions https://raw.githubusercontent.com/bio-platform/bio-class-deb10/main/lib/common_functions
+. /home/debian/common_functions
+set_sshd_config
+
 
 # True to use deploy key or any other to download public repo
 PRIVATE_REPO=""
