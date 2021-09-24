@@ -1017,7 +1017,7 @@ fi
 
 if [[ "$MODE" == "all" ]] || [[ "$MODE" == "post" ]];then
   # Copy ssh from debian account, .vimrc 
-  mkdir -p /home/"$BIOUSER"/.ssh; cd /home/"$BIOUSER"; cp /home/debian/.ssh/authorized_keys.user .ssh/; chmod 700 .ssh; chmod 600 /home/"$BIOUSER"/.ssh/authorized_keys; chown "$BIOUSER": /home/"$BIOUSER"/.ssh -R
+  mkdir -p /home/"$BIOUSER"/.ssh; cd /home/"$BIOUSER"; cp /home/debian/.ssh/authorized_keys.user .ssh/authorized_keys; chmod 700 .ssh; chmod 600 /home/"$BIOUSER"/.ssh/authorized_keys; chown "$BIOUSER": /home/"$BIOUSER"/.ssh -R
   #rm -f /home/debian/.ssh/authorized_keys.user
   # Add admins
   if [[ -f ${CONF_DIR}/authorized_keys ]];then
