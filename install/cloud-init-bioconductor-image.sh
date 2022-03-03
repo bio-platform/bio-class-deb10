@@ -10,6 +10,10 @@ export PATH
 CONF_DIR="$dirname"/../conf
 LIB_DIR="$dirname"/../lib
 
+# generate unique nfs_clientid.conf
+
+sudo bash -c "echo options nfs nfs4_unique_id=$(/usr/bin/cat /proc/sys/kernel/random/uuid) >/etc/modprobe.d/nfs_clientid.conf"
+
 # backup debian account authorized_keys. Einfra account from metadata should be used to mount NFS storage.
 chown root: /home/debian/.ssh/authorized_keys
 cp /home/debian/.ssh/authorized_keys /home/debian/.ssh/authorized_keys.user
