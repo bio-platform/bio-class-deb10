@@ -52,12 +52,12 @@ echo -e "####################################################################
 # ERROR - Bioclass_user NOT FOUD IN METADATA, REQUIRED FOR LOGIN   #
 #                                                                  #
 #                                                                  #
-# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT             #
+# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD-INIT SCRIPT             #
 #                                                                  #
 ####################################################################" > /etc/issue.net
   echo "------------------------"
   echo "ERROR - Bioclass_user NOT FOUD IN METADATA, REQUIRED FOR LOGIN"
-  echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT"
+  echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD-INIT SCRIPT"
   echo "------------------------"
 elif [[ -z "$tmp_rstudio_exists" ]] && [[ -z "$tmp_rstudio_server" ]] ;then
 echo -e "####################################################################
@@ -65,7 +65,7 @@ echo -e "####################################################################
 # ERROR - RSTUDIO SERVER NOT FOUND, BIOCONDUCTOR IMAGE REQUIRED    #
 #                                                                  #
 #                                                                  #
-# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT             #
+# UNABLE TO CONTINUE, EXITING CUSTOM-CLOUD INIT SCRIPT             #
 #                                                                  #
 ####################################################################" > /etc/issue.net
   echo "------------------------"
@@ -75,22 +75,24 @@ echo -e "####################################################################
 elif [[ $tmp_ver -ne $tmp_req_ver ]];then
 echo -e "####################################################################
 #                                                                  #
-# ERROR - DEBIAN IS VERSION $tmp_ver BUT FOR SELECTED BIOCONDUCTOR IS REQUIRED VERSION $tmp_req_ver #
+# ERROR - DEBIAN IS VERSION $tmp_ver BUT iTHE  BIOCONDUCTOR REQUIRES VERSION $tmp_req_ver #
 #                                                                  #
 #                                                                  #
-# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT FOR $tmp_req_repo #
+# UNABLE TO CONTINUE, EXITING CUSTOM CLOUD-INIT SCRIPT FOR $tmp_req_repo #
 #                                                                  #
 ####################################################################" > /etc/issue.net
   echo "------------------------"
   echo "ERROR - DEBIAN IS VERSION $tmp_ver BUT FOR SELECTED BIOCONDUCTOR IS REQUIRED VERSION $tmp_req_ver"
-  echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD INIT SCRIPT FOR $tmp_req_repo"
+  echo "UNABLE TO CONTINUE, EXITING CUSTOM CLOUD-INIT SCRIPT FOR $tmp_req_repo"
   echo "------------------------"
 else
   echo -e "####################################################################
 #                                                                  #
-# Instance is during process of software instalation, please wait! #
+# Instance is in the process of software installation, please wait!#
 #                                                                  #
-# Login will be enabled after finished configuration.              #
+# Login will be enabled once configuration has finished.           #
+#                                                                  #
+# NOTE that on successfull configuration the machine will reboot!  #
 #                                                                  #
 ####################################################################" > /etc/issue.net
 fi
@@ -98,7 +100,7 @@ sed -i 's/#Banner none$/Banner \/etc\/issue.net/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
 if [[ $tmp_ver -ne $tmp_req_ver ]] || [[ -z "$tmp_rstudio_exists" ]] || [[ -z "$tmp_rstudio_server" ]] || [[ -z "$BIOUSER" ]];then
-  echo "Exiting from CUSTOM CLOUD INIT SCRIPT FOR BIOCONDUCTOR"
+  echo "Exiting from CUSTOM CLOUD-INIT SCRIPT FOR BIOCONDUCTOR"
   exit 1
 fi
 
@@ -197,6 +199,8 @@ fi
 echo "# Remove SSH Warning Message to Users after finished Software instalation"
 sudo sh -c "echo ${tmp_issuenet} > /etc/issue.net"
 sudo sed -i 's/Banner.*/#Banner none/g' /etc/ssh/sshd_config
-sudo systemctl restart sshd
+# This requires a service restart but it will come with system restart later
+
+sudo /usr/sbin/reboot
 
 exit 0
