@@ -699,7 +699,7 @@ if [[ "$MODE" == "all" ]] || [[ "$MODE" == "base" ]]; then
   systemctl status rpc-gssd
 
   # Edit /etc/fstab
-  sed -i '/^$/d' /etc/fstab; echo -e "storage-brno3-cerit.metacentrum.cz:/nfs4/projects/bioconductor\t/data/\tnfs4\tsec=krb5,vers=4\t0\t0\n" >> /etc/fstab
+  sed -i '/^$/d' /etc/fstab; echo -e "storage-brno12-cerit.metacentrum.cz:/nfs4/projects/bioconductor\t/data/\tnfs4\tsec=krb5,vers=4\t0\t0\n" >> /etc/fstab
   # Start nfs and set auto start after reboot
   systemctl restart nfs-client.target ; systemctl status nfs-client.target;
 
